@@ -6,6 +6,10 @@
 
 This utility is a compilation of Windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky about any contributions to keep this project clean and efficient.
 
+This is a version of WinUtil that has been updated with various fixes, renovations, and improvements to the original CTT WinUtil's Edge Removal and Windows Update functions.
+
+
+
 ![screen-install](./docs/assets/Title-Screen.png)
 
 ## 💡 Usage
