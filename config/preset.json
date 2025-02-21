@@ -1,0 +1,25 @@
+{
+  "Standard": [
+    "WPFTweaksAH",
+    "WPFTweaksConsumerFeatures",
+    "WPFTweaksDVR",
+    "WPFTweaksHiber",
+    "WPFTweaksHome",
+    "WPFTweaksLoc",
+    "WPFTweaksServices",
+    "WPFTweaksStorage",
+    "WPFTweaksTele",
+    "WPFTweaksWifi",
+    "WPFTweaksDiskCleanup",
+    "WPFTweaksDeleteTempFiles",
+    "WPFTweaksEndTaskOnTaskbar",
+    "WPFTweaksRestorePoint",
+    "WPFTweaksPowershell7Tele"
+  ],
+  "Minimal": [
+    "WPFTweaksConsumerFeatures",
+    "WPFTweaksHome",
+    "WPFTweaksServices",
+    "WPFTweaksTele"
+  ]
+}
