@@ -8,7 +8,14 @@ This utility is a compilation of Windows tasks I perform on each Windows system 
 
 This is a version of WinUtil that has been updated with various fixes, renovations, and improvements to the original CTT WinUtil's Edge Removal and Windows Update functions.
 
+**NOTE: This is NOT the official GitHub Repository for Chris Titus Tech's WinUtil. This is just for submitting some eventual PR's that are going to be made into the mainline version of WinUtil.**
 
+**For right now, this version of WinUtil as it is currently in this repository is for non-production testing purposes ONLY. If you decide to do otherwise, then you are doing so at your own risk.** 
+
+***You have been warned!*** 
+
+**Please feel free to help test this version of WinUtil that is within this repository and submit any bugs reports / issues and GitHub commits that you may have. Any Pull Requests that can help fix any bugs, introduce code improvements, add any 
+additional meaningful features, or improve code quality and efficiency would help tremendously and is highly encouraged. Thank you to anyone in advance who elects to do so.** 
 
 ![screen-install](./docs/assets/Title-Screen.png)
 
