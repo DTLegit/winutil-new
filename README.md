@@ -37,12 +37,7 @@ Winutil must be run in Admin mode because it performs system-wide tweaks. To ach
 #### Stable Branch (Recommended)
 
 ```ps1
-irm "https://christitus.com/win" | iex
-```
-#### Dev Branch
-
-```ps1
-irm "https://christitus.com/windev" | iex
+irm "https://tinyurl.com/dtlegit-winutil" | iex
 ```
 
 If you have Issues, refer to [Known Issues](https://christitustech.github.io/winutil/KnownIssues/)
