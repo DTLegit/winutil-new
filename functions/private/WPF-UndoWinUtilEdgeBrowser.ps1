@@ -182,26 +182,56 @@ if (-not $downloadSucceeded) {
 }
 
 # Determine installation method based on the file extension.
+# --- First, run the interactive installation ---
 if ($installerFile.Extension -eq ".msi") {
     Write-Host "Detected MSI installer. Launching interactive installation of Microsoft Edge..."
     # Define the log file path on the Desktop.
     $desktopPath = [Environment]::GetFolderPath("Desktop")
     $msiLogPath = Join-Path $desktopPath "msiexec.log"
-    # Remove the /quiet flag so that the installer UI is visible.
+    # Launch interactive install (no /quiet or /silent)
     $msiArgs = "/i `"$($installerFile.FullName)`" /norestart /l*v `"$msiLogPath`""
     $installerProcess = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait -PassThru -Verb RunAs
 }
 else {
     Write-Host "Detected EXE installer. Launching interactive installation..."
-    # For EXE installers, remove the /silent flag to allow the full GUI to appear.
     $installerProcess = Start-Process -FilePath $installerFile.FullName -Wait -PassThru -Verb RunAs
 }
 
 $exitCode = $installerProcess.ExitCode
-Write-Host "Installer exited with code: $exitCode"
+Write-Host "Interactive installer exited with code: $exitCode"
 
-if ($installerFile.Extension -eq ".msi") {
-    Write-Host "MSI log file created at: $msiLogPath"
+# Allow some time for shortcuts to be created
+Start-Sleep -Seconds 10
+
+# --- Now, check if Edge appears via its shortcuts ---
+# Define expected shortcut paths.
+$edgeDesktopShortcut = Join-Path ([Environment]::GetFolderPath("Desktop")) "Microsoft Edge.lnk"
+# For the current user's Start Menu; adjust the subfolder if necessary.
+$edgeStartMenuShortcutUser = Join-Path ([Environment]::GetFolderPath("StartMenu")) "Programs\Microsoft Edge.lnk"
+# Also check the all-users Start Menu folder.
+$edgeStartMenuShortcutAll = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk"
+
+if ((-not (Test-Path $edgeDesktopShortcut)) -and (-not (Test-Path $edgeStartMenuShortcutUser)) -and (-not (Test-Path $edgeStartMenuShortcutAll))) {
+    Write-Host "Edge installation not detected (no shortcuts found). Attempting forced installation with reinstall options..."
+
+    if ($installerFile.Extension -eq ".msi") {
+        # For MSI installers, run with forced reinstall parameters and silent switches.
+        $desktopPath = [Environment]::GetFolderPath("Desktop")
+        $msiLogPathForced = Join-Path $desktopPath "msiexec_forced.log"
+        $msiArgsForced = "/i `"$($installerFile.FullName)`" REINSTALL=ALL REINSTALLMODE=vomus /norestart /l*v `"$msiLogPathForced`""
+        $installerProcessForced = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgsForced -Wait -PassThru -Verb RunAs
+    }
+    else {
+        # For EXE installers, use silent install parameters.
+        $exeArgsForced = "/passive /norestart"
+        $installerProcessForced = Start-Process -FilePath $installerFile.FullName -ArgumentList $exeArgsForced -Wait -PassThru -Verb RunAs
+    }
+
+    $exitCodeForced = $installerProcessForced.ExitCode
+    Write-Host "Forced installer exited with code: $exitCodeForced"
+}
+else {
+    Write-Host "Edge installation detected (shortcuts found)."
 }
 
 # As a safeguard, terminate any lingering processes with "Edge" in their name.
@@ -217,7 +247,7 @@ foreach ($proc in $installerProcesses) {
 }
 
 # Clean up: remove the temporary directory used for the installer.
-Write-Host "Cleaning up installer temporary files..."
+Write-Host "Cleaning up remaining temporary Edge installer files..."
 Remove-Item -Path $tempDir -Recurse -Force
 
 # Remove Winget cache directories manually.
@@ -247,6 +277,7 @@ Get-ChildItem -Path $env:TEMP -Directory | Where-Object { $_.Name -match '(?i)ed
 # ------------------------------
 # Final System Cleanup with Disk Cleanup (excluding Windows Update Cleanup and Downloads)
 # ------------------------------
+Write-Host "Performing Temp Cleanup Operation to ensure all remaining Edge install files are deleted from the system."
 Write-Host "Configuring Disk Cleanup profile to clean temporary/cache files (excluding Windows Update Cleanup and Downloads)..."
 
 # Set registry flags for Disk Cleanup (SAGESET:100) for the desired categories:
@@ -273,7 +304,7 @@ Start-Process -FilePath "reg.exe" -ArgumentList 'add "HKLM\SOFTWARE\Microsoft\Wi
 Start-Process -FilePath "reg.exe" -ArgumentList 'add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Microsoft Defender Antivirus" /v StateFlags00100 /t REG_DWORD /d 0 /f' -Wait
 Start-Process -FilePath "reg.exe" -ArgumentList 'add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Temporary Internet Files" /v StateFlags00100 /t REG_DWORD /d 0 /f' -Wait
 
-Write-Host "Microsoft Edge installation and full system cleanup process is complete. You might want to ensure that all Edge install components are cleaned by making sure that all temporary files are cleaned via the Windows storage settings. Simply search for 'Storage' in the settings search, click on 'Storage Settings' and go to 'Temporary Files' to get to the storage cleanup menu." -ForegroundColor Blue
+Write-Host "Microsoft Edge installation and full system cleanup process is complete. You might want to ensure that all Edge install components are removed by making sure that all temporary files are cleaned via the Windows storage settings. Simply search for 'Storage' in the settings search, click on 'Storage Settings' and go to 'Temporary Files' to get to the storage cleanup menu." -ForegroundColor Cyan
 
 Write-Host "Edge has been successfully reinstalled." -ForegroundColor Green
 
