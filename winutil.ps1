@@ -5254,7 +5254,7 @@ $tempDir = Join-Path $env:TEMP "EdgeInstaller_$([guid]::NewGuid())"
 New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
 
 # Build the Winget download command using the proper parameter for download directory.
-$wingetDownloadCmd = "winget download --id Microsoft.Edge --download-directory `"$tempDir`""
+$wingetDownloadArgs = "download --id Microsoft.Edge --download-directory `"$tempDir`" --accept-source-agreements --accept-package-agreements"
 
 $maxAttempts = 3
 $attempt = 1
@@ -5264,7 +5264,7 @@ $installerFile = $null
 while ($attempt -le $maxAttempts -and -not $downloadSucceeded) {
     Write-Host "Winget download attempt $attempt of $maxAttempts..."
     try {
-        Invoke-Expression $wingetDownloadCmd
+        Start-Process -FilePath "winget.exe" -ArgumentList $wingetDownloadArgs -Wait
 
         # Look for any downloaded installer file (could be .msi, .exe, etc.)
         $installerFile = Get-ChildItem -Path $tempDir -File | Select-Object -First 1
@@ -8005,8 +8005,7 @@ Write-Host "Setup complete. The CheckSecuritySettings task has been scheduled to
 
 # ----- Run the ApplySecuritySettings.ps1 script immediately for initial setup -----
 Write-Host "Running initial application of security settings..."
-& "$ApplyScriptPath"
-
+& powershell.exe -ExecutionPolicy Bypass -File "$ApplyScriptPath"
 Write-Host "Optimal and Security-Only Update Settings Applied! Security_Only_Script log is saved to desktop." -ForegroundColor Green
 
 # ----- Stop transcript for mother script -----
