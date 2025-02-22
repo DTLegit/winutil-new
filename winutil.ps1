@@ -5298,20 +5298,27 @@ if (-not $downloadSucceeded) {
 
 # Determine installation method based on the file extension.
 if ($installerFile.Extension -eq ".msi") {
-    Write-Host "Detected MSI installer. Installing using msiexec with forced reinstall options (/quiet /norestart)..."
-    # For MSI installers, use /quiet for a completely silent installation.
-    $msiArgs = "/i `"$($installerFile.FullName)`" REINSTALL=ALL REINSTALLMODE=vomus /quiet /norestart"
+    Write-Host "Detected MSI installer. Installing using msiexec with forced reinstall options (/quiet /norestart) and logging enabled..."
+    # Define the log file path on the Desktop.
+    $desktopPath = [Environment]::GetFolderPath("Desktop")
+    $msiLogPath = Join-Path $desktopPath "msiexec.log"
+    # For MSI installers, add a logging parameter to capture detailed installation logs.
+    $msiArgs = "/i `"$($installerFile.FullName)`" REINSTALL=ALL REINSTALLMODE=vomus /quiet /norestart /l*v `"$msiLogPath`""
     $installerProcess = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait -PassThru -Verb RunAs
 }
 else {
     Write-Host "Detected EXE installer. Installing with /silent /norestart..."
-    # For EXE installers, try using /silent (if supported by the installer).
+    # For EXE installers, logging options vary; please consult documentation if available.
     $exeArgs = "/silent /norestart"
     $installerProcess = Start-Process -FilePath $installerFile.FullName -ArgumentList $exeArgs -Wait -PassThru -Verb RunAs
 }
 
 $exitCode = $installerProcess.ExitCode
 Write-Host "Installer exited with code: $exitCode"
+
+if ($installerFile.Extension -eq ".msi") {
+    Write-Host "MSI log file created at: $msiLogPath"
+}
 
 # As a safeguard, terminate any lingering processes with "Edge" in their name.
 $installerProcesses = Get-Process | Where-Object { $_.ProcessName -match "Edge" }
