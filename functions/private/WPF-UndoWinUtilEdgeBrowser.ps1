@@ -1,14 +1,16 @@
 function WPF-UndoWinUtilEdgeBrowser {
 
-# edge_vanisher.ps1 is designed to uninstall Edge and block its reinstallation. This script
-# restores the ability for Edge to be reinstalled by the system.
-#
+# edge_vanisher.ps1 is designed to uninstall Edge and block its reinstallation. This script restores the ability for Edge to be reinstalled by the system.
+# 
 # Additionally, this will also automatically download and completely re-install the Edge Browser, along with a complete cache and temporary file cleanup after the reinstall to get rid of all remenants of the Edge installer.
-#
+# 
 # This script is a modified version Talon's Edge Removal Unblock Script maintained by @totallynotK0 and the @ravendevteam, which itself is a fork of @MRE53's original edge_unblock.ps1 script.
 # Credit for the majority of this script goes to @MRE53, @totallynotK0, and the @ravendevteam for this script. These developers have done an amazing job with this script and full gratitude and thanks goes to them.
-# This would not have been possible without their work.
-# This version has been tailored to work with Chris Titus Tech's WinUtil Program.
+# This would not have been possible without their work. This version has been tailored to work with Chris Titus Tech's WinUtil Program.
+#
+# Link to the original script repository source: https://github.com/mre31/edge-complete-remover 
+# Link to the repository that this script was adapted from: https://github.com/ravendevteam/talon-blockedge 
+#
 #
 # Edge folder paths
 $folderPaths = @(
