@@ -1,7 +1,9 @@
-# This script is a modified version Talon's edge_vanisher.ps1 Script maintained by @totallynotK0 and the @ravendevteam, which itself is a fork of @MRE53's original edge_vanisher.ps1 script.
+# This script is a modified version Talon's edge_vanisher.ps1 Script maintained by @totallynotK0 and the @ravendevteam, which itself is a fork of @mre31's original edge_vanisher.ps1 script.
 # It has been adapted and modified to work within Chris Titus Tech's WinUtil Program.
-# Credit for this script goes to @MRE53, @totallynotK0, and the @ravendevteam for this script. These developers have done an amazing job with this script and full gratitude and thanks goes to them.
+# Credit for this script goes to @mre31, @totallynotK0, and the @ravendevteam for this script. These developers have done an amazing job with this script and full gratitude and thanks goes to them.
 # This would not have been possible without their work.
+# Link to the original script repository source: https://github.com/mre31/edge-complete-remover 
+# Link to the repository that this script was adapted from: https://github.com/ravendevteam/talon-blockedge 
 # This script will completely force uninstall Edge via the EXE method, close any related processes, cleanses all Edge-Related System folders and registry entries, and prevents Windows Update from reinstalling the Edge browser without
 # the user's explicit consent.
 
