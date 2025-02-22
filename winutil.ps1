@@ -5298,19 +5298,18 @@ if (-not $downloadSucceeded) {
 
 # Determine installation method based on the file extension.
 if ($installerFile.Extension -eq ".msi") {
-    Write-Host "Detected MSI installer. Installing using msiexec with forced reinstall options (/quiet /norestart) and logging enabled..."
+    Write-Host "Detected MSI installer. Launching interactive installation of Microsoft Edge..."
     # Define the log file path on the Desktop.
     $desktopPath = [Environment]::GetFolderPath("Desktop")
     $msiLogPath = Join-Path $desktopPath "msiexec.log"
-    # For MSI installers, add a logging parameter to capture detailed installation logs.
-    $msiArgs = "/i `"$($installerFile.FullName)`" REINSTALL=ALL REINSTALLMODE=vomus /quiet /norestart /l*v `"$msiLogPath`""
+    # Remove the /quiet flag so that the installer UI is visible.
+    $msiArgs = "/i `"$($installerFile.FullName)`" /norestart /l*v `"$msiLogPath`""
     $installerProcess = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait -PassThru -Verb RunAs
 }
 else {
-    Write-Host "Detected EXE installer. Installing with /silent /norestart..."
-    # For EXE installers, logging options vary; please consult documentation if available.
-    $exeArgs = "/silent /norestart"
-    $installerProcess = Start-Process -FilePath $installerFile.FullName -ArgumentList $exeArgs -Wait -PassThru -Verb RunAs
+    Write-Host "Detected EXE installer. Launching interactive installation..."
+    # For EXE installers, remove the /silent flag to allow the full GUI to appear.
+    $installerProcess = Start-Process -FilePath $installerFile.FullName -Wait -PassThru -Verb RunAs
 }
 
 $exitCode = $installerProcess.ExitCode
