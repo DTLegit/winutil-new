@@ -596,8 +596,7 @@ Write-Host "Setup complete. The CheckSecuritySettings task has been scheduled to
 
 # ----- Run the ApplySecuritySettings.ps1 script immediately for initial setup -----
 Write-Host "Running initial application of security settings..."
-& "$ApplyScriptPath"
-
+& powershell.exe -ExecutionPolicy Bypass -File "$ApplyScriptPath"
 Write-Host "Optimal and Security-Only Update Settings Applied! Security_Only_Script log is saved to desktop." -ForegroundColor Green
 
 # ----- Stop transcript for mother script -----
