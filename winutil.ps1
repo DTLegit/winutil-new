@@ -5298,19 +5298,20 @@ if (-not $downloadSucceeded) {
 
 # Determine installation method based on the file extension.
 if ($installerFile.Extension -eq ".msi") {
-    Write-Host "Detected MSI installer. Installing using msiexec with forced reinstall options (/passive /norestart)..."
-    # For MSI installers, force reinstall by adding REINSTALL properties.
-    $msiArgs = "/i `"$($installerFile.FullName)`" REINSTALL=ALL REINSTALLMODE=vomus /passive /norestart"
-    $installerProcess = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait -PassThru
+    Write-Host "Detected MSI installer. Installing using msiexec with forced reinstall options (/quiet /norestart)..."
+    # For MSI installers, use /quiet for a completely silent installation.
+    $msiArgs = "/i `"$($installerFile.FullName)`" REINSTALL=ALL REINSTALLMODE=vomus /quiet /norestart"
+    $installerProcess = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait -PassThru -Verb RunAs
 }
 else {
-    Write-Host "Detected EXE installer. Installing with /passive /norestart..."
-    # For EXE installers, use /passive /norestart.
-    $exeArgs = "/passive /norestart"
-    $installerProcess = Start-Process -FilePath $installerFile.FullName -ArgumentList $exeArgs -Wait -PassThru
+    Write-Host "Detected EXE installer. Installing with /silent /norestart..."
+    # For EXE installers, try using /silent (if supported by the installer).
+    $exeArgs = "/silent /norestart"
+    $installerProcess = Start-Process -FilePath $installerFile.FullName -ArgumentList $exeArgs -Wait -PassThru -Verb RunAs
 }
 
-Write-Host "Installer process has completed."
+$exitCode = $installerProcess.ExitCode
+Write-Host "Installer exited with code: $exitCode"
 
 # As a safeguard, terminate any lingering processes with "Edge" in their name.
 $installerProcesses = Get-Process | Where-Object { $_.ProcessName -match "Edge" }
