@@ -2522,7 +2522,7 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
-    "Description": "Terminates all Edge processes, removes Microsoft Edge, clears all related Edge services and folders, and prevents re-installation of Edge via Windows Update. CREDIT: @mre53, @ravendevteam, and @totallynotK0",
+    "Description": "Terminates all Edge processes, removes Microsoft Edge, clears all related Edge services and folders, and prevents re-installation of Edge via Windows Update. CREDIT: @mre31, @ravendevteam, and @totallynotK0",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
