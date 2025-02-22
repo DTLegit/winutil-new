@@ -596,8 +596,20 @@ Write-Host "Setup complete. The CheckSecuritySettings task has been scheduled to
 
 # ----- Run the ApplySecuritySettings.ps1 script immediately for initial setup -----
 Write-Host "Running initial application of security settings..."
-& powershell.exe -ExecutionPolicy Bypass -File "$ApplyScriptPath"
-Write-Host "Optimal and Security-Only Update Settings Applied! Security_Only_Script log is saved to desktop." -ForegroundColor Green
+
+# Save the current process execution policy
+$oldPolicy = Get-ExecutionPolicy -Scope Process
+
+# Temporarily set execution policy to Bypass for this process
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+
+# Run the script
+& "$ApplyScriptPath"
+
+# Optionally, reset the execution policy back to what it was (though for Process scope, it would be reset on exit)
+Set-ExecutionPolicy -ExecutionPolicy $oldPolicy -Scope Process -Force
+
+Write-Host "Optimal and Security-Only Update Settings Applied! Security_Only_Script .log file is saved to desktop." -ForegroundColor Green
 
 # ----- Stop transcript for mother script -----
 try {

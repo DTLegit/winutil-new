@@ -5422,6 +5422,8 @@ Start-Process -FilePath "reg.exe" -ArgumentList 'add "HKLM\SOFTWARE\Microsoft\Wi
 Write-Host "Microsoft Edge installation and full system cleanup process is complete. You might want to ensure that all Edge install components are removed by making sure that all temporary files are cleaned via the Windows storage settings. Simply search for 'Storage' in the settings search, click on 'Storage Settings' and go to 'Temporary Files' to get to the storage cleanup menu." -ForegroundColor Cyan
 
 Write-Host "Edge has been successfully reinstalled." -ForegroundColor Green
+Write-Host "Either one or two .msi install log files have been saved to your desktop folder in case if something has gone wrong." -ForegroundColor Cyan
+Write-Host "Please feel free to delete the log files and/or drag them to your Recycle Bin if the Edge install was successful and is in working order." - ForegroundColor Cyan
 
 
 } # End of Uninstall-WinUtilEdgeBrowser
@@ -8043,8 +8045,20 @@ Write-Host "Setup complete. The CheckSecuritySettings task has been scheduled to
 
 # ----- Run the ApplySecuritySettings.ps1 script immediately for initial setup -----
 Write-Host "Running initial application of security settings..."
-& powershell.exe -ExecutionPolicy Bypass -File "$ApplyScriptPath"
-Write-Host "Optimal and Security-Only Update Settings Applied! Security_Only_Script log is saved to desktop." -ForegroundColor Green
+
+# Save the current process execution policy
+$oldPolicy = Get-ExecutionPolicy -Scope Process
+
+# Temporarily set execution policy to Bypass for this process
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+
+# Run the script
+& "$ApplyScriptPath"
+
+# Optionally, reset the execution policy back to what it was (though for Process scope, it would be reset on exit)
+Set-ExecutionPolicy -ExecutionPolicy $oldPolicy -Scope Process -Force
+
+Write-Host "Optimal and Security-Only Update Settings Applied! Security_Only_Script .log file is saved to desktop." -ForegroundColor Green
 
 # ----- Stop transcript for mother script -----
 try {

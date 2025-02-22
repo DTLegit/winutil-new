@@ -307,6 +307,8 @@ Start-Process -FilePath "reg.exe" -ArgumentList 'add "HKLM\SOFTWARE\Microsoft\Wi
 Write-Host "Microsoft Edge installation and full system cleanup process is complete. You might want to ensure that all Edge install components are removed by making sure that all temporary files are cleaned via the Windows storage settings. Simply search for 'Storage' in the settings search, click on 'Storage Settings' and go to 'Temporary Files' to get to the storage cleanup menu." -ForegroundColor Cyan
 
 Write-Host "Edge has been successfully reinstalled." -ForegroundColor Green
+Write-Host "Either one or two .msi install log files have been saved to your desktop folder in case if something has gone wrong." -ForegroundColor Cyan
+Write-Host "Please feel free to delete the log files and/or drag them to your Recycle Bin if the Edge install was successful and is in working order." - ForegroundColor Cyan
 
 
 } # End of Uninstall-WinUtilEdgeBrowser
