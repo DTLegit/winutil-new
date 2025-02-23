@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 25.02.21
+    Version        : 25.02.23
 #>
 
 param (
@@ -40,7 +40,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "25.02.21"
+$sync.version = "25.02.23"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4805,10 +4805,12 @@ function Test-WinUtilPackageManager {
 
     return $status
 }
-# This script is a modified version Talon's edge_vanisher.ps1 Script maintained by @totallynotK0 and the @ravendevteam, which itself is a fork of @MRE53's original edge_vanisher.ps1 script.
+# This script is a modified version Talon's edge_vanisher.ps1 Script maintained by @totallynotK0 and the @ravendevteam, which itself is a fork of @mre31's original edge_vanisher.ps1 script.
 # It has been adapted and modified to work within Chris Titus Tech's WinUtil Program.
-# Credit for this script goes to @MRE53, @totallynotK0, and the @ravendevteam for this script. These developers have done an amazing job with this script and full gratitude and thanks goes to them.
+# Credit for this script goes to @mre31, @totallynotK0, and the @ravendevteam for this script. These developers have done an amazing job with this script and full gratitude and thanks goes to them.
 # This would not have been possible without their work.
+# Link to the original script repository source: https://github.com/mre31/edge-complete-remover
+# Link to the repository that this script was adapted from: https://github.com/ravendevteam/talon-blockedge
 # This script will completely force uninstall Edge via the EXE method, close any related processes, cleanses all Edge-Related System folders and registry entries, and prevents Windows Update from reinstalling the Edge browser without
 # the user's explicit consent.
 
@@ -4836,7 +4838,8 @@ if ($processes) {
 Write-Host "Uninstalling Edge with setup..." -ForegroundColor Cyan
 $edgePath = "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\*\Installer\setup.exe"
 if (Test-Path $edgePath) {
-    Start-Process -FilePath $(Resolve-Path $edgePath) -ArgumentList "--uninstall --system-level --verbose-logging --force-uninstall" -Wait
+    $resolvedEdgePath = (Resolve-Path $edgePath)[0]
+    Start-Process -FilePath $resolvedEdgePath -ArgumentList "--uninstall --system-level --verbose-logging --force-uninstall" -Wait
 }
 # Remove Start Menu shortcuts
 Write-Host "Removing Start Menu shortcuts..." -ForegroundColor Cyan
@@ -4922,7 +4925,7 @@ foreach ($service in $services) {
 # Finally force uninstall Edge
 $edgeSetup = Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\*\Installer\setup.exe" -ErrorAction SilentlyContinue
 if ($edgeSetup) {
-    Start-Process $edgeSetup.FullName -ArgumentList "--uninstall --system-level --verbose-logging --force-uninstall" -Wait
+    Start-Process -FilePath $edgeSetup[0].FullName -ArgumentList "--uninstall --system-level --verbose-logging --force-uninstall" -Wait
 }
 # Restart Explorer
 Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
@@ -5115,15 +5118,17 @@ Function Update-WinUtilProgramWinget {
 }
 function WPF-UndoWinUtilEdgeBrowser {
 
-# edge_vanisher.ps1 is designed to uninstall Edge and block its reinstallation. This script
-# restores the ability for Edge to be reinstalled by the system.
+# edge_vanisher.ps1 is designed to uninstall Edge and block its reinstallation. This script restores the ability for Edge to be reinstalled by the system.
 #
 # Additionally, this will also automatically download and completely re-install the Edge Browser, along with a complete cache and temporary file cleanup after the reinstall to get rid of all remenants of the Edge installer.
 #
-# This script is a modified version Talon's Edge Removal Unblock Script maintained by @totallynotK0 and the @ravendevteam, which itself is a fork of @MRE53's original edge_unblock.ps1 script.
-# Credit for the majority of this script goes to @MRE53, @totallynotK0, and the @ravendevteam for this script. These developers have done an amazing job with this script and full gratitude and thanks goes to them.
-# This would not have been possible without their work.
-# This version has been tailored to work with Chris Titus Tech's WinUtil Program.
+# This script is a modified version Talon's Edge Removal Unblock Script maintained by @totallynotK0 and the @ravendevteam, which itself is a fork of @mre31's original edge_unblock.ps1 script.
+# Credit for the majority of this script goes to @mre31, @totallynotK0, and the @ravendevteam for this script. These developers have done an amazing job with this script and full gratitude and thanks goes to them.
+# This would not have been possible without their work. This version has been tailored to work with Chris Titus Tech's WinUtil Program.
+#
+# Link to the original script repository source: https://github.com/mre31/edge-complete-remover
+# Link to the repository that this script was adapted from: https://github.com/ravendevteam/talon-blockedge
+#
 #
 # Edge folder paths
 $folderPaths = @(
@@ -7668,7 +7673,7 @@ $allGood = $true
 # Check main WindowsUpdate settings
 $WURegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
 try {
-    $WUSettings = Get-ItemProperty -Path $WURegPath -ErrorAction Stop
+    $WUSettings = Get-ItemProperty -Path $WURegPath -ErrorAction Stop 2>$null
 } catch {
     $allGood = $false
 }
@@ -7697,7 +7702,7 @@ if ($allGood -and ($DevMetaSettings.PreventDeviceMetadataFromNetwork -ne 1)) {
 # Check DriverSearching settings
 $DriverSearchPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching"
 try {
-    $DriverSearchSettings = Get-ItemProperty -Path $DriverSearchPath -ErrorAction Stop
+    $DriverSearchSettings = Get-ItemProperty -Path $DriverSearchPath -ErrorAction Stop 2>$null
 } catch {
     $allGood = $false
 }
@@ -7710,7 +7715,7 @@ if ($allGood -and ( ($DriverSearchSettings.DontPromptForWindowsUpdate -ne 1) -or
 # Check WindowsUpdate\AU settings
 $AUPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
 try {
-    $AUSettings = Get-ItemProperty -Path $AUPath -ErrorAction Stop
+    $AUSettings = Get-ItemProperty -Path $AUPath -ErrorAction Stop 2>$null
 } catch {
     $allGood = $false
 }
@@ -7935,7 +7940,7 @@ if ($TimeSpan.TotalDays -ge 364) {
     $RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
     $ExistingRegSettings = $null
     try {
-        $ExistingRegSettings = Get-ItemProperty -Path $RegPath -ErrorAction Stop
+        $ExistingRegSettings = Get-ItemProperty -Path $RegPath -ErrorAction Stop 2>$null
     } catch {
         $ExistingRegSettings = $null
     }
@@ -7956,7 +7961,7 @@ if ($TimeSpan.TotalDays -ge 364) {
     # Device Metadata
     $DevMetaPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata"
     $DevMetaSettings = $null
-    try { $DevMetaSettings = Get-ItemProperty -Path $DevMetaPath -ErrorAction Stop } catch {}
+    try { $DevMetaSettings = Get-ItemProperty -Path $DevMetaPath -ErrorAction Stop 2>$null } catch {}
     if ($null -eq $DevMetaSettings -or $DevMetaSettings.PreventDeviceMetadataFromNetwork -ne 1) {
         if (-not $Silent) { Write-Host "DEBUG: Device Metadata settings discrepancy found." }
         $ReapplyNeeded = $true
@@ -7965,7 +7970,7 @@ if ($TimeSpan.TotalDays -ge 364) {
     # Driver Searching
     $DriverSearchPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching"
     $DriverSearchSettings = $null
-    try { $DriverSearchSettings = Get-ItemProperty -Path $DriverSearchPath -ErrorAction Stop } catch {}
+    try { $DriverSearchSettings = Get-ItemProperty -Path $DriverSearchPath -ErrorAction Stop 2>$null } catch {}
     if ($null -eq $DriverSearchSettings -or
         ($DriverSearchSettings.DontPromptForWindowsUpdate -ne 1) -or
         ($DriverSearchSettings.DontSearchWindowsUpdate -ne 1) -or
@@ -7977,7 +7982,7 @@ if ($TimeSpan.TotalDays -ge 364) {
     # WindowsUpdate AU
     $AUPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
     $AUSettings = $null
-    try { $AUSettings = Get-ItemProperty -Path $AUPath -ErrorAction Stop } catch {}
+    try { $AUSettings = Get-ItemProperty -Path $AUPath -ErrorAction Stop 2>$null } catch {}
     if ($null -eq $AUSettings -or
         ($AUSettings.NoAutoRebootWithLoggedOnUsers -ne 1) -or
         ($AUSettings.AUPowerManagement -ne 0)) {
@@ -13909,7 +13914,7 @@ $sync.configs.tweaks = @'
                          },
     "WPFTweaksRemoveEdge":  {
                                 "Content":  "Remove Microsoft Edge",
-                                "Description":  "Terminates all Edge processes, removes Microsoft Edge, clears all related Edge services and folders, and prevents re-installation of Edge via Windows Update. CREDIT: @MRE, @ravendevteam, and @totallynotK0",
+                                "Description":  "Terminates all Edge processes, removes Microsoft Edge, clears all related Edge services and folders, and prevents re-installation of Edge via Windows Update. CREDIT: @mre31, @ravendevteam, and @totallynotK0",
                                 "category":  "z__Advanced Tweaks - CAUTION",
                                 "panel":  "1",
                                 "Order":  "a029_",

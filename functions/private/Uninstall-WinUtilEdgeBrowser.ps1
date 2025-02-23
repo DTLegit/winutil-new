@@ -2,8 +2,8 @@
 # It has been adapted and modified to work within Chris Titus Tech's WinUtil Program.
 # Credit for this script goes to @mre31, @totallynotK0, and the @ravendevteam for this script. These developers have done an amazing job with this script and full gratitude and thanks goes to them.
 # This would not have been possible without their work.
-# Link to the original script repository source: https://github.com/mre31/edge-complete-remover 
-# Link to the repository that this script was adapted from: https://github.com/ravendevteam/talon-blockedge 
+# Link to the original script repository source: https://github.com/mre31/edge-complete-remover
+# Link to the repository that this script was adapted from: https://github.com/ravendevteam/talon-blockedge
 # This script will completely force uninstall Edge via the EXE method, close any related processes, cleanses all Edge-Related System folders and registry entries, and prevents Windows Update from reinstalling the Edge browser without
 # the user's explicit consent.
 
@@ -31,7 +31,8 @@ if ($processes) {
 Write-Host "Uninstalling Edge with setup..." -ForegroundColor Cyan
 $edgePath = "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\*\Installer\setup.exe"
 if (Test-Path $edgePath) {
-    Start-Process -FilePath $(Resolve-Path $edgePath) -ArgumentList "--uninstall --system-level --verbose-logging --force-uninstall" -Wait
+    $resolvedEdgePath = (Resolve-Path $edgePath)[0]
+    Start-Process -FilePath $resolvedEdgePath -ArgumentList "--uninstall --system-level --verbose-logging --force-uninstall" -Wait
 }
 # Remove Start Menu shortcuts
 Write-Host "Removing Start Menu shortcuts..." -ForegroundColor Cyan
@@ -117,7 +118,7 @@ foreach ($service in $services) {
 # Finally force uninstall Edge
 $edgeSetup = Get-ChildItem -Path "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\*\Installer\setup.exe" -ErrorAction SilentlyContinue
 if ($edgeSetup) {
-    Start-Process $edgeSetup.FullName -ArgumentList "--uninstall --system-level --verbose-logging --force-uninstall" -Wait
+    Start-Process -FilePath $edgeSetup[0].FullName -ArgumentList "--uninstall --system-level --verbose-logging --force-uninstall" -Wait
 }
 # Restart Explorer
 Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
