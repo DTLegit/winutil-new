@@ -7674,12 +7674,10 @@ $allGood = $true
 
 # Check main WindowsUpdate settings
 $WURegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
-try {
-    $WUSettings = Get-ItemProperty -Path $WURegPath -ErrorAction Stop 2>$null
-} catch {
-    $allGood = $false
-}
-if ($allGood) {
+
+$WUSettings = Get-ItemProperty -Path $WURegPath -ErrorAction SilentlyContinue
+if (-not $WUSettings) { $allGood = $false }
+
     if ( ($WUSettings.ProductVersion -ne $ProductVersion) -or
          ($WUSettings.TargetReleaseVersionInfo -ne $TargetReleaseVersionInfo) -or
          ($WUSettings.TargetReleaseVersion -ne 1) -or
@@ -7703,26 +7701,20 @@ if ($allGood -and ($DevMetaSettings.PreventDeviceMetadataFromNetwork -ne 1)) {
 
 # Check DriverSearching settings
 $DriverSearchPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching"
-try {
-    $DriverSearchSettings = Get-ItemProperty -Path $DriverSearchPath -ErrorAction Stop 2>$null
-} catch {
-    $allGood = $false
-}
+$DriverSearchSettings = Get-ItemProperty -Path $DriverSearchPath -ErrorAction SilentlyContinue
+if (-not $DriverSearchSettings) { $allGood = $false }
 if ($allGood -and ( ($DriverSearchSettings.DontPromptForWindowsUpdate -ne 1) -or
-                     ($DriverSearchSettings.DontSearchWindowsUpdate -ne 1) -or
-                     ($DriverSearchSettings.DriverUpdateWizardWuSearchEnabled -ne 0) )) {
+                    ($DriverSearchSettings.DontSearchWindowsUpdate -ne 1) -or
+                    ($DriverSearchSettings.DriverUpdateWizardWuSearchEnabled -ne 0) )) {
     $allGood = $false
 }
 
 # Check WindowsUpdate\AU settings
 $AUPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
-try {
-    $AUSettings = Get-ItemProperty -Path $AUPath -ErrorAction Stop 2>$null
-} catch {
-    $allGood = $false
-}
+$AUSettings = Get-ItemProperty -Path $AUPath -ErrorAction SilentlyContinue
+if (-not $AUSettings) { $allGood = $false }
 if ($allGood -and ( ($AUSettings.NoAutoRebootWithLoggedOnUsers -ne 1) -or
-                     ($AUSettings.AUPowerManagement -ne 0) )) {
+                    ($AUSettings.AUPowerManagement -ne 0) )) {
     $allGood = $false
 }
 
@@ -7940,12 +7932,7 @@ if ($TimeSpan.TotalDays -ge 364) {
 
     # ----- Registry Check -----
     $RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
-    $ExistingRegSettings = $null
-    try {
-        $ExistingRegSettings = Get-ItemProperty -Path $RegPath -ErrorAction Stop 2>$null
-    } catch {
-        $ExistingRegSettings = $null
-    }
+    $ExistingRegSettings = Get-ItemProperty -Path $RegPath -ErrorAction SilentlyContinue
 
     if ($null -eq $ExistingRegSettings) {
         if (-not $Silent) { Write-Host "DEBUG: WindowsUpdate registry settings not found." }
@@ -7962,8 +7949,7 @@ if ($TimeSpan.TotalDays -ge 364) {
 
     # Device Metadata
     $DevMetaPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata"
-    $DevMetaSettings = $null
-    try { $DevMetaSettings = Get-ItemProperty -Path $DevMetaPath -ErrorAction Stop 2>$null } catch {}
+    $DevMetaSettings = Get-ItemProperty -Path $DevMetaPath -ErrorAction SilentlyContinue
     if ($null -eq $DevMetaSettings -or $DevMetaSettings.PreventDeviceMetadataFromNetwork -ne 1) {
         if (-not $Silent) { Write-Host "DEBUG: Device Metadata settings discrepancy found." }
         $ReapplyNeeded = $true
@@ -7971,8 +7957,7 @@ if ($TimeSpan.TotalDays -ge 364) {
 
     # Driver Searching
     $DriverSearchPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching"
-    $DriverSearchSettings = $null
-    try { $DriverSearchSettings = Get-ItemProperty -Path $DriverSearchPath -ErrorAction Stop 2>$null } catch {}
+    $DriverSearchSettings = Get-ItemProperty -Path $DriverSearchPath -ErrorAction SilentlyContinue
     if ($null -eq $DriverSearchSettings -or
         ($DriverSearchSettings.DontPromptForWindowsUpdate -ne 1) -or
         ($DriverSearchSettings.DontSearchWindowsUpdate -ne 1) -or
@@ -7983,8 +7968,7 @@ if ($TimeSpan.TotalDays -ge 364) {
 
     # WindowsUpdate AU
     $AUPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
-    $AUSettings = $null
-    try { $AUSettings = Get-ItemProperty -Path $AUPath -ErrorAction Stop 2>$null } catch {}
+    $AUSettings = Get-ItemProperty -Path $AUPath -ErrorAction SilentlyContinue
     if ($null -eq $AUSettings -or
         ($AUSettings.NoAutoRebootWithLoggedOnUsers -ne 1) -or
         ($AUSettings.AUPowerManagement -ne 0)) {
