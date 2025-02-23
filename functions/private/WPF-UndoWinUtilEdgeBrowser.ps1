@@ -187,6 +187,7 @@ if (-not $downloadSucceeded) {
 # --- First, run the interactive installation ---
 if ($installerFile.Extension -eq ".msi") {
     Write-Host "Detected MSI installer. Launching interactive installation of Microsoft Edge..."
+    Write-Host "The Edge installer may seem to hang while installing. This is expected. Please be prepared to wait a few minutes." -ForegroundColor Cyan
     # Define the log file path on the Desktop.
     $desktopPath = [Environment]::GetFolderPath("Desktop")
     $msiLogPath = Join-Path $desktopPath "msiexec.log"
@@ -215,6 +216,7 @@ $edgeStartMenuShortcutAll = "C:\ProgramData\Microsoft\Windows\Start Menu\Program
 
 if ((-not (Test-Path $edgeDesktopShortcut)) -and (-not (Test-Path $edgeStartMenuShortcutUser)) -and (-not (Test-Path $edgeStartMenuShortcutAll))) {
     Write-Host "Edge installation not detected (no shortcuts found). Attempting forced installation with reinstall options..."
+    Write-Host "The Edge installer may seem to hang while installing. This is expected. Please be prepared to wait a few minutes." -ForegroundColor Cyan
 
     if ($installerFile.Extension -eq ".msi") {
         # For MSI installers, run with forced reinstall parameters and silent switches.
@@ -310,7 +312,7 @@ Write-Host "Microsoft Edge installation and full system cleanup process is compl
 
 Write-Host "Edge has been successfully reinstalled." -ForegroundColor Green
 Write-Host "Either one or two .msi install log files have been saved to your desktop folder in case if something has gone wrong." -ForegroundColor Cyan
-Write-Host "Please feel free to delete the log files and/or drag them to your Recycle Bin if the Edge install was successful and is in working order." - ForegroundColor Cyan
+Write-Host "Please feel free to delete the log files and/or drag them to your Recycle Bin if the Edge install was successful and is in working order." -ForegroundColor Cyan
 
 
 } # End of Uninstall-WinUtilEdgeBrowser
