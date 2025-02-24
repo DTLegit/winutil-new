@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 25.02.23
+    Version        : 25.02.24
 #>
 
 param (
@@ -40,7 +40,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "25.02.23"
+$sync.version = "25.02.24"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -5492,7 +5492,7 @@ function Invoke-WPFButton {
         "WPFClearTweaksSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFTweak*"}
         "WPFClearInstallSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFInstall*"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
-        "WPFOOSUbutton" {Invoke-WPFOOSU}
+        "WPFOOSUbutton" {Invoke-WPFOOSUAuto -customize -silent}
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enable"}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disable"}
         "WPFundoall" {Invoke-WPFundoall}
@@ -6256,25 +6256,405 @@ function Invoke-WPFInstallUpgrade {
         Write-Host "==========================================="
     }
 }
-function Invoke-WPFOOSU {
-    <#
-    .SYNOPSIS
-        Downloads and runs OO Shutup 10
-    #>
+# This script removes both the OneDrive and the new Outlook applications from Windows. It closes all Outlook and OneDrive processes, completely uninstalls/removes OneDrive and Outlook plus integrations,
+# and cleans up any remaining folders and registry keys/items from those applications on the system.
+# It is based on a script called "uninstall_oo.ps1" originally written by @mre31 on GitHub, but modified and adapted to work within WinUtil.
+# The old WinUtil functionality of copying OneDrive folder contents to the user directory has been retained.
+# The majority of this script has been gracefully provided under the terms of the BSD 3-Clause License.
+# The original version of this script can be found in this source repository here: https://github.com/mre31/oouninstaller
+# Thank you to @mre31 for his work. Without it, this would otherwise not have been possible.
+
+function Invoke-WPFOORemove {
+
+# Run with highest privileges
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     try {
-        $OOSU_filepath = "$ENV:temp\OOSU10.exe"
-        $Initial_ProgressPreference = $ProgressPreference
-        $ProgressPreference = "SilentlyContinue" # Disables the Progress Bar to drasticly speed up Invoke-WebRequest
-        Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
-        Write-Host "Starting OO Shutup 10 ..."
-        Start-Process $OOSU_filepath
-    } catch {
-        Write-Host "Error Downloading and Running OO Shutup 10" -ForegroundColor Red
+        Start-Process PowerShell -Verb RunAs "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -WindowStyle Hidden
+        exit
     }
-    finally {
-        $ProgressPreference = $Initial_ProgressPreference
+    catch {
+        exit
     }
 }
+
+try {
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    $ErrorActionPreference = 'SilentlyContinue'
+
+    # Close Outlook processes
+    Get-Process | Where-Object { $_.ProcessName -like "*outlook*" } | Stop-Process -Force
+    Start-Sleep -Seconds 2
+
+    # Remove Outlook apps
+    Get-AppxPackage *Microsoft.Office.Outlook* | Remove-AppxPackage
+    Get-AppxProvisionedPackage -Online | Where-Object {$_.PackageName -like "*Microsoft.Office.Outlook*"} | Remove-AppxProvisionedPackage -Online
+    Get-AppxPackage *Microsoft.OutlookForWindows* | Remove-AppxPackage
+    Get-AppxProvisionedPackage -Online | Where-Object {$_.PackageName -like "*Microsoft.OutlookForWindows*"} | Remove-AppxProvisionedPackage -Online
+
+    # Remove Outlook folders
+    $windowsAppsPath = "C:\Program Files\WindowsApps"
+    $outlookFolders = Get-ChildItem -Path $windowsAppsPath -Directory | Where-Object { $_.Name -like "Microsoft.OutlookForWindows*" }
+    foreach ($folder in $outlookFolders) {
+        $folderPath = Join-Path $windowsAppsPath $folder.Name
+        takeown /f $folderPath /r /d Y | Out-Null
+        icacls $folderPath /grant administrators:F /t | Out-Null
+        Remove-Item -Path $folderPath -Recurse -Force
+    }
+
+    # Remove shortcuts
+    $shortcutPaths = @(
+        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Outlook.lnk",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Outlook.lnk",
+        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Office\Outlook.lnk",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Microsoft Office\Outlook.lnk",
+        "$env:PUBLIC\Desktop\Outlook.lnk",
+        "$env:USERPROFILE\Desktop\Outlook.lnk",
+        "$env:PUBLIC\Desktop\Microsoft Outlook.lnk",
+        "$env:USERPROFILE\Desktop\Microsoft Outlook.lnk",
+        "$env:PUBLIC\Desktop\Outlook (New).lnk",
+        "$env:USERPROFILE\Desktop\Outlook (New).lnk",
+        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Outlook (New).lnk",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Outlook (New).lnk"
+    )
+    $shortcutPaths | ForEach-Object { Remove-Item $_ -Force }
+
+    # Taskbar cleanup
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -Type DWord -Force
+
+    $registryPaths = @(
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\TaskbarMRU",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\TaskBar",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    )
+    foreach ($path in $registryPaths) {
+        if (Test-Path $path) {
+            @("Favorites", "FavoritesResolve", "FavoritesChanges", "FavoritesRemovedChanges", "TaskbarWinXP", "PinnedItems") |
+            ForEach-Object { Remove-ItemProperty -Path $path -Name $_ -ErrorAction SilentlyContinue }
+        }
+    }
+
+    Remove-Item "$env:LOCALAPPDATA\Microsoft\Windows\Shell\LayoutModification.xml" -Force
+    Remove-Item "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\iconcache*" -Force
+    Remove-Item "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\thumbcache*" -Force
+
+    # OneDrive removal
+    Get-Process | Where-Object { $_.ProcessName -like "*onedrive*" } | Stop-Process -Force
+    if (Test-Path "$env:SystemRoot\SysWOW64\OneDriveSetup.exe") {
+        & "$env:SystemRoot\SysWOW64\OneDriveSetup.exe" /uninstall
+    } elseif (Test-Path "$env:SystemRoot\System32\OneDriveSetup.exe") {
+        & "$env:SystemRoot\System32\OneDriveSetup.exe" /uninstall
+    }
+
+    # Retain Older WinUtil OneDrive Removal Functionality: Copy OneDrive Folder Contents (if any) to the root of the UserProfile
+    $OneDrivePath = $env:OneDrive
+    if (Test-Path $OneDrivePath) {
+        Write-Host "Copy downloaded files from the OneDrive folder to the Root UserProfile"
+        Start-Process -FilePath powershell -ArgumentList "robocopy '$OneDrivePath' '$($env:USERPROFILE.TrimEnd())\' /mov /e /xj" -NoNewWindow -Wait
+    }
+
+    # Remove OneDrive-Related Folders and Some Registry Keys
+    @(
+        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk",
+        "$env:PUBLIC\Desktop\OneDrive.lnk",
+        "$env:USERPROFILE\Desktop\OneDrive.lnk",
+        "$env:USERPROFILE\OneDrive",
+        "$env:LOCALAPPDATA\Microsoft\OneDrive",
+        "$env:ProgramData\Microsoft\OneDrive",
+        "$env:SystemDrive\OneDriveTemp"
+    ) | ForEach-Object { Remove-Item $_ -Force -Recurse }
+
+    @(
+        "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}",
+        "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{018D5C66-4533-4307-9B53-224DE2ED1FE6}",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StorageProvider\OneDrive",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StorageProviderStatus\OneDrive"
+    ) | ForEach-Object { Remove-Item -Path $_ -Recurse -Force }
+
+    # Registry cleanup
+    $runNotificationPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunNotification"
+    if (Test-Path $runNotificationPath) {
+        Get-Item -Path $runNotificationPath |
+        Select-Object -ExpandProperty Property |
+        Where-Object { $_ -like "StartupTNotiOneDrive*" } |
+        ForEach-Object { Remove-ItemProperty -Path $runNotificationPath -Name $_ -Force }
+    }
+
+    # Registry cleanup
+    $compatStorePath = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store"
+    if (Test-Path $compatStorePath) {
+        Get-Item -Path $compatStorePath |
+        Select-Object -ExpandProperty Property |
+        Where-Object { $_ -like "*OneDrive*" } |
+        ForEach-Object { Remove-ItemProperty -Path $compatStorePath -Name $_ -Force }
+    }
+
+    # Registry cleanup
+    $winlogonPath = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon"
+    if (Test-Path $winlogonPath) {
+        Remove-ItemProperty -Path $winlogonPath -Name "ExcludeProfileDirs" -Force -ErrorAction SilentlyContinue
+    }
+
+    # Registry cleanup
+    $regAppsPath = "HKCU:\Software\RegisteredApplications"
+    if (Test-Path $regAppsPath) {
+        Remove-ItemProperty -Path $regAppsPath -Name "OneDrive" -Force -ErrorAction SilentlyContinue
+    }
+
+    # Shell Folders edit
+    $username = $env:USERNAME
+    $shellFoldersPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
+
+    # Edit folders
+    Set-ItemProperty -Path $shellFoldersPath -Name "My Music" -Value "C:\Users\$username\Music" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "My Pictures" -Value "C:\Users\$username\Pictures" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "My Video" -Value "C:\Users\$username\Videos" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "Personal" -Value "C:\Users\$username\Documents" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "Desktop" -Value "C:\Users\$username\Desktop" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "Favorites" -Value "C:\Users\$username\Favorites" -Type String -Force
+
+    # Restart Explorer
+    Get-Process explorer | Stop-Process -Force
+    Start-Sleep -Seconds 2
+    Start-Process explorer
+}
+catch {}
+} # End Invoke-WPFOORemove
+function Invoke-WPFOOSUAuto {
+
+<#
+.SYNOPSIS
+    Downloads and runs O&O ShutUp10 with various modes, including:
+      - GUI mode ("customize")
+      - Applying recommended settings ("recommended")
+      - Applying default settings ("default") ??? same as recommended except it uses a configuration file named OOSU10-Default.cfg
+
+.DESCRIPTION
+    The script creates a unique temporary folder where it downloads the O&O ShutUp10 executable.
+    For the "recommended" and "default" actions, it downloads the configuration file from a defined URL using three download methods (each tried three times in sequence).
+    The executable itself is also downloaded using these methods.
+
+    After O&O ShutUp10 completes (or the GUI is closed), the script cleans up by deleting the temporary
+    folder and its contents.
+
+.PARAMETER default
+    Launches the default mode (applies default configuration using OOSU10-Default.cfg).
+
+.PARAMETER recommended
+    Launches the recommended mode (applies recommended configuration using OOSU10.cfg).
+
+.PARAMETER customize
+    Launches the GUI mode.
+
+.PARAMETER verbose
+    Enables verbose (debug) output.
+
+.PARAMETER silent
+    Suppresses all console output.
+
+.EXAMPLE
+    .\OOSU10-Auto.ps1 -default -verbose
+
+    Runs the script in default mode with detailed output.
+#>
+
+param (
+    [switch]$default,
+    [switch]$recommended,
+    [switch]$customize,
+    [switch]$verbose,
+    [switch]$silent
+)
+
+# --- Check for Administrator Privileges ---
+function Test-IsAdministrator {
+    $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+    return $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+if (-not (Test-IsAdministrator)) {
+    Write-Host "OOSU10Auto is not running as Administrator. Trying to run with administrator rights..."
+    $scriptPath = $PSCommandPath
+    $arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $($MyInvocation.UnboundArguments)"
+    try {
+        Start-Process powershell.exe -ArgumentList $arguments -Verb RunAs
+        exit
+    } catch {
+        Write-Host "Failed to relaunch as administrator. Please run PowerShell as administrator and try again."
+        exit 1
+    }
+}
+
+# --- Check if a Mode was Specified ---
+if (-not ($default -or $recommended -or $customize)) {
+    if (-not $silent) {
+        Write-Host "A launch argument is required. Please specify one of the following:"
+        Write-Host "  -default       : Apply default configuration (looks for OOSU10-Default.cfg)"
+        Write-Host "  -recommended   : Apply recommended configuration (looks for OOSU10.cfg)"
+        Write-Host "  -customize     : Launch the GUI mode"
+        Write-Host "Optional output level switches:"
+        Write-Host "  -silent        : Suppress all output"
+        Write-Host "  -verbose       : Show detailed debugging output"
+    }
+    exit 1
+}
+
+# --- Set Output Mode ---
+if ($silent) {
+    $VerbosePreference = "SilentlyContinue"
+    $ProgressPreference = "SilentlyContinue"
+} elseif ($verbose) {
+    $VerbosePreference = "Continue"
+} else {
+    # Normal mode: standard output with some Write-Host messages.
+    $VerbosePreference = "SilentlyContinue"
+}
+
+# --- Helper Functions for Output ---
+function MyWriteHost {
+    param([string]$message)
+    if (-not $silent) { Write-Host $message }
+}
+function MyWriteVerbose {
+    param([string]$message)
+    if (-not $silent) { Write-Verbose $message }
+}
+function MyWriteError {
+    param([string]$message)
+    if (-not $silent) { Write-Error $message }
+}
+
+# --- Function: Download-File ---
+# Tries three methods (each with 3 attempts) to download a file.
+function Download-File {
+    param(
+        [string]$url,
+        [string]$destination
+    )
+    $methods = @("InvokeWebRequest", "WebClient", "BitsTransfer")
+    foreach ($method in $methods) {
+         $success = $false
+         for ($attempt=1; $attempt -le 3; $attempt++) {
+             try {
+                  switch ($method) {
+                      "InvokeWebRequest" {
+                          Invoke-WebRequest -Uri $url -OutFile $destination -ErrorAction Stop
+                      }
+                      "WebClient" {
+                          $wc = New-Object System.Net.WebClient
+                          $wc.DownloadFile($url, $destination)
+                      }
+                      "BitsTransfer" {
+                          Start-BitsTransfer -Source $url -Destination $destination -ErrorAction Stop
+                      }
+                  }
+                  MyWriteVerbose "Method $method attempt $attempt succeeded for $url"
+                  $success = $true
+                  break
+             } catch {
+                  MyWriteVerbose "Method $method attempt $attempt failed: $_"
+             }
+         }
+         if ($success) {
+              return $true
+         }
+    }
+    return $false
+}
+
+# --- Function: Get-ConfigFile ---
+# Downloads the configuration file from the provided URL to the destination path.
+function Get-ConfigFile {
+    param(
+        [string]$destPath,
+        [string]$DownloadURL
+    )
+    MyWriteHost "Downloading configuration file from $DownloadURL"
+    if (-not (Download-File -url $DownloadURL -destination $destPath)) {
+        MyWriteError "Failed to download configuration file after all methods and retries."
+        Remove-Item $tempDir -Recurse -Force
+        exit 1
+    }
+    MyWriteVerbose "Downloaded configuration file to: $destPath"
+    MyWriteHost "Configuration file downloaded."
+}
+
+# --- Define URLs for Downloads ---
+$exeURL           = "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe"
+$configURL        = "https://raw.githubusercontent.com/DTLegit/Windows-OOSU10-Auto-Script/refs/heads/main/OOSU10.cfg"
+$defaultConfigURL = "https://raw.githubusercontent.com/DTLegit/Windows-OOSU10-Auto-Script/refs/heads/main/OOSU10-Default.cfg"
+
+# --- Save Original Progress Setting ---
+$Initial_ProgressPreference = $ProgressPreference
+
+MyWriteHost "OOSU10Auto is starting..."
+
+# --- Create a Unique Temporary Folder ---
+$tempDir = Join-Path $env:TEMP ("OOSU10_temp_" + [guid]::NewGuid().ToString())
+try {
+    New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+    MyWriteVerbose "Created temporary directory: $tempDir"
+    MyWriteHost "Temporary directory created."
+} catch {
+    MyWriteError "Failed to create temporary directory: $_"
+    exit 1
+}
+
+# --- Download the Executable Using Robust Download Methods ---
+$exePath = Join-Path $tempDir "OOSU10.exe"
+MyWriteHost "Downloading O&O ShutUp10 executable..."
+if (-not (Download-File -url $exeURL -destination $exePath)) {
+    MyWriteError "Failed to download O&O ShutUp10 executable after all methods and retries."
+    Remove-Item $tempDir -Recurse -Force
+    exit 1
+}
+MyWriteVerbose "Downloaded O&O ShutUp10 to: $exePath"
+MyWriteHost "Executable downloaded."
+
+# --- Main Action: Select Mode Based on the Switch Provided ---
+if ($customize) {
+    MyWriteHost "Launching O&O ShutUp10 in GUI mode..."
+    try {
+        Start-Process -FilePath $exePath -Wait -Verbose
+    } catch {
+        MyWriteError "Failed to start O&O ShutUp10: $_"
+    }
+} elseif ($recommended) {
+    MyWriteHost "Applying recommended configuration..."
+    $configPath = Join-Path $tempDir "OOSU_10-Recommended.cfg"
+    Get-ConfigFile -destPath $configPath -DownloadURL $configURL
+    try {
+        Start-Process -FilePath $exePath -ArgumentList $configPath, '/quiet' -Wait -Verbose
+    } catch {
+        MyWriteError "Failed to apply recommended configuration: $_"
+    }
+} elseif ($default) {
+    MyWriteHost "Applying default configuration..."
+    $configPath = Join-Path $tempDir "OOSU_10-Default.cfg"
+    Get-ConfigFile -destPath $configPath -DownloadURL $defaultConfigURL
+    try {
+        Start-Process -FilePath $exePath -ArgumentList $configPath, '/quiet' -Wait -Verbose
+    } catch {
+        MyWriteError "Failed to apply default configuration: $_"
+    }
+}
+
+# --- Cleanup ---
+$ProgressPreference = $Initial_ProgressPreference
+MyWriteHost "Cleaning up temporary files..."
+try {
+    Remove-Item $tempDir -Recurse -Force
+    MyWriteVerbose "Temporary directory removed."
+    MyWriteHost "Cleanup complete."
+} catch {
+    MyWriteVerbose "Failed to remove temporary directory: $_"
+}
+
+MyWriteHost "Script completed."
+
+} # End Invoke-WPFOOSUAuto
 function Invoke-WPFPanelAutologin {
     <#
 
@@ -7148,6 +7528,37 @@ function Invoke-WPFundoall {
 
     }
 }
+# Undo Script for Invoke-WPFOORemove
+# This script will simply perform the re-installation of OneDrive and Outlook back onto the Windows system, if they have both been removed.
+
+function Invoke-WPFUndoOORemove {
+
+# Ensure the script is run as Administrator
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "This script must be run as Administrator. Please restart PowerShell with elevated privileges." -ForegroundColor Red
+    exit 1
+}
+
+# Check if OneDrive is installed
+$onedriveInstalled = Get-AppxPackage -Name "*OneDrive*"
+
+# Check if the New Outlook (Package identifier "9NRX63209R7B") is installed
+$outlookInstalled = Get-AppxPackage | Where-Object { $_.PackageFamilyName -like "*9NRX63209R7B*" }
+
+if (-not $onedriveInstalled -and -not $outlookInstalled) {
+    Write-Host "Neither OneDrive nor New Outlook is installed. Installing both via winget..."
+
+    # Install OneDrive (assuming the package ID is Microsoft.OneDrive)
+    Start-Process -FilePath "winget" -ArgumentList "install Microsoft.OneDrive --accept-source-agreements --accept-package-agreements -e" -NoNewWindow -Wait
+
+    # Install New Outlook using its package identifier
+    Start-Process -FilePath "winget" -ArgumentList "install 9NRX63209R7B --accept-source-agreements --accept-package-agreements -e" -NoNewWindow -Wait
+}
+else {
+    Write-Host "One or both packages are already installed. No action taken."
+}
+
+} # End Invoke-WPFOORemove
 function Invoke-WPFUnInstall {
     <#
 
@@ -11547,21 +11958,21 @@ $sync.configs.tweaks = @'
                                              "Name":  "EnableActivityFeed",
                                              "Type":  "DWord",
                                              "Value":  "0",
-                                             "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                             "OriginalValue":  "\r\n\u003cRemoveEntry\u003e"
                                          },
                                          {
                                              "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
                                              "Name":  "PublishUserActivities",
                                              "Type":  "DWord",
                                              "Value":  "0",
-                                             "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                             "OriginalValue":  "\r\n    \u003cRemoveEntry\u003e"
                                          },
                                          {
                                              "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
                                              "Name":  "UploadUserActivities",
                                              "Type":  "DWord",
                                              "Value":  "0",
-                                             "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                             "OriginalValue":  "\r\n        \u003cRemoveEntry\u003e"
                                          }
                                      ],
                         "link":  "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
@@ -13116,126 +13527,126 @@ $sync.configs.tweaks = @'
                                                       "Name":  "CreateDesktopShortcutDefault",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n            \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "PersonalizationReportingEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "ShowRecommendationsEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                    \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "HideFirstRunExperience",
                                                       "Type":  "DWord",
                                                       "Value":  "1",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                        \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "UserFeedbackAllowed",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                            \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "ConfigureDoNotTrack",
                                                       "Type":  "DWord",
                                                       "Value":  "1",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "AlternateErrorPagesEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                    \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "EdgeCollectionsEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                        \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "EdgeShoppingAssistantEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                            \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "MicrosoftEdgeInsiderPromotionEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                                \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "PersonalizationReportingEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                                    \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "ShowMicrosoftRewards",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                                        \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "WebWidgetAllowed",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                                            \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "DiagnosticData",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                                                \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "EdgeAssetDeliveryServiceEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                                                    \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "EdgeCollectionsEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                                                        \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "CryptoWalletEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                                                            \u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "WalletDonationEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\r\n                                                                                \u003cRemoveEntry\u003e"
                                                   }
                                               ],
                                  "link":  "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
@@ -13249,7 +13660,7 @@ $sync.configs.tweaks = @'
                                       "registry":  [
                                                        {
                                                            "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-                                                           "OriginalValue":  "\u003cRemoveEntry\u003e",
+                                                           "OriginalValue":  "\r\n                                                                                    \u003cRemoveEntry\u003e",
                                                            "Name":  "DisableWindowsConsumerFeatures",
                                                            "Value":  "1",
                                                            "Type":  "DWord"
@@ -13336,11 +13747,11 @@ $sync.configs.tweaks = @'
                                                "Type":  "DWord",
                                                "Value":  "0",
                                                "Name":  "AllowTelemetry",
-                                               "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                               "OriginalValue":  "\r\n                                                                                        \u003cRemoveEntry\u003e"
                                            },
                                            {
                                                "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\r\n                                                                                            \u003cRemoveEntry\u003e",
                                                "Name":  "AllowTelemetry",
                                                "Value":  "0",
                                                "Type":  "DWord"
@@ -13424,21 +13835,21 @@ $sync.configs.tweaks = @'
                                            },
                                            {
                                                "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\r\n                                                                                                \u003cRemoveEntry\u003e",
                                                "Name":  "DoNotShowFeedbackNotifications",
                                                "Value":  "1",
                                                "Type":  "DWord"
                                            },
                                            {
                                                "Path":  "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\r\n                                                                                                    \u003cRemoveEntry\u003e",
                                                "Name":  "DisableTailoredExperiencesWithDiagnosticData",
                                                "Value":  "1",
                                                "Type":  "DWord"
                                            },
                                            {
                                                "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
-                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\r\n                                                                                                        \u003cRemoveEntry\u003e",
                                                "Name":  "DisabledByGroupPolicy",
                                                "Value":  "1",
                                                "Type":  "DWord"
@@ -13565,7 +13976,7 @@ $sync.configs.tweaks = @'
                                            },
                                            {
                                                "Path":  "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
-                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\r\n                                                                                                            \u003cRemoveEntry\u003e",
                                                "Name":  "EnableFeeds",
                                                "Value":  "0",
                                                "Type":  "DWord"
@@ -13579,7 +13990,7 @@ $sync.configs.tweaks = @'
                                            },
                                            {
                                                "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\r\n                                                                                                                \u003cRemoveEntry\u003e",
                                                "Name":  "HideSCAMeetNow",
                                                "Value":  "1",
                                                "Type":  "DWord"
@@ -13932,14 +14343,14 @@ $sync.configs.tweaks = @'
                                                         "Name":  "TurnOffWindowsCopilot",
                                                         "Type":  "DWord",
                                                         "Value":  "1",
-                                                        "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                        "OriginalValue":  "\r\n                                                                                                                    \u003cRemoveEntry\u003e"
                                                     },
                                                     {
                                                         "Path":  "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
                                                         "Name":  "TurnOffWindowsCopilot",
                                                         "Type":  "DWord",
                                                         "Value":  "1",
-                                                        "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                        "OriginalValue":  "\r\n                                                                                                                        \u003cRemoveEntry\u003e"
                                                     },
                                                     {
                                                         "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
@@ -13969,7 +14380,7 @@ $sync.configs.tweaks = @'
                                                     "Name":  "DisableAIDataAnalysis",
                                                     "Type":  "DWord",
                                                     "Value":  "1",
-                                                    "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                    "OriginalValue":  "\r\n                                                                                                                            \u003cRemoveEntry\u003e"
                                                 }
                                             ],
                                "InvokeScript":  [
@@ -13994,20 +14405,20 @@ $sync.configs.tweaks = @'
                                                 ],
                                  "link":  "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"
                              },
-    "WPFTweaksRemoveOnedrive":  {
-                                    "Content":  "Remove OneDrive",
-                                    "Description":  "Moves OneDrive files to Default Home Folders and Uninstalls it.",
-                                    "category":  "z__Advanced Tweaks - CAUTION",
-                                    "panel":  "1",
-                                    "Order":  "a030_",
-                                    "InvokeScript":  [
-                                                         "\r\n      $OneDrivePath = $($env:OneDrive)\r\n      Write-Host \"Removing OneDrive\"\r\n\r\n      # Check both traditional and Microsoft Store installations\r\n      $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"\r\n      $msStorePath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\Applications\\*OneDrive*\"\r\n\r\n      if (Test-Path $regPath) {\r\n          $OneDriveUninstallString = Get-ItemPropertyValue \"$regPath\" -Name \"UninstallString\"\r\n          $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(\" \")\r\n          Start-Process -FilePath $OneDriveExe -ArgumentList \"$OneDriveArgs /silent\" -NoNewWindow -Wait\r\n      } elseif (Test-Path $msStorePath) {\r\n          Write-Host \"OneDrive appears to be installed via Microsoft Store\" -ForegroundColor Yellow\r\n          # Attempt to uninstall via winget\r\n          Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --accept-source-agreements Microsoft.OneDrive\" -NoNewWindow -Wait\r\n      } else {\r\n          Write-Host \"OneDrive doesn\u0027t seem to be installed\" -ForegroundColor Red\r\n          Write-Host \"Running cleanup if OneDrive path exists\" -ForegroundColor Red\r\n      }\r\n\r\n      # Check if OneDrive got Uninstalled (both paths)\r\n      if (Test-Path $OneDrivePath) {\r\n        Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"\r\n        Start-Process -FilePath powershell -ArgumentList \"robocopy \u0027$($OneDrivePath)\u0027 \u0027$($env:USERPROFILE.TrimEnd())\\\u0027 /mov /e /xj\" -NoNewWindow -Wait\r\n\r\n        Write-Host \"Removing OneDrive leftovers\"\r\n        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"\r\n        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\OneDrive\"\r\n        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:programdata\\Microsoft OneDrive\"\r\n        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:systemdrive\\OneDriveTemp\"\r\n        reg delete \"HKEY_CURRENT_USER\\Software\\Microsoft\\OneDrive\" -f\r\n        # check if directory is empty before removing:\r\n        If ((Get-ChildItem \"$OneDrivePath\" -Recurse | Measure-Object).Count -eq 0) {\r\n            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$OneDrivePath\"\r\n        }\r\n\r\n        Write-Host \"Remove Onedrive from explorer sidebar\"\r\n        Set-ItemProperty -Path \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0\r\n        Set-ItemProperty -Path \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0\r\n\r\n        Write-Host \"Removing run hook for new users\"\r\n        reg load \"hku\\Default\" \"C:\\Users\\Default\\NTUSER.DAT\"\r\n        reg delete \"HKEY_USERS\\Default\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDriveSetup\" /f\r\n        reg unload \"hku\\Default\"\r\n\r\n        Write-Host \"Removing autostart key\"\r\n        reg delete \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDrive\" /f\r\n\r\n        Write-Host \"Removing startmenu entry\"\r\n        Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"\r\n\r\n        Write-Host \"Removing scheduled task\"\r\n        Get-ScheduledTask -TaskPath \u0027\\\u0027 -TaskName \u0027OneDrive*\u0027 -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false\r\n\r\n        # Add Shell folders restoring default locations\r\n        Write-Host \"Shell Fixing\"\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"AppData\" -Value \"$env:userprofile\\AppData\\Roaming\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cache\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCache\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cookies\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCookies\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Favorites\" -Value \"$env:userprofile\\Favorites\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"History\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\History\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Local AppData\" -Value \"$env:userprofile\\AppData\\Local\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Music\" -Value \"$env:userprofile\\Music\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Video\" -Value \"$env:userprofile\\Videos\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"NetHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Network Shortcuts\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"PrintHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Printer Shortcuts\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Programs\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Recent\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Recent\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"SendTo\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\SendTo\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Start Menu\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Startup\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Templates\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Templates\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{374DE290-123F-4565-9164-39C4925E467B}\" -Value \"$env:userprofile\\Downloads\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Desktop\" -Value \"$env:userprofile\\Desktop\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Pictures\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Personal\" -Value \"$env:userprofile\\Documents\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{F42EE2D3-909F-4907-8871-4C22FC0BF756}\" -Value \"$env:userprofile\\Documents\" -Type ExpandString\r\n        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{0DDD015D-B06C-45D5-8C4C-F59713854639}\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString\r\n        Write-Host \"Restarting explorer\"\r\n        taskkill.exe /F /IM \"explorer.exe\"\r\n        Start-Process \"explorer.exe\"\r\n\r\n        Write-Host \"Waiting for explorer to complete loading\"\r\n        Write-Host \"Please Note - The OneDrive folder at $OneDrivePath may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"\r\n        Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow\r\n        Start-Sleep 5\r\n      } else {\r\n        Write-Host \"Nothing to Cleanup with OneDrive\" -ForegroundColor Red\r\n      }\r\n      "
-                                                     ],
-                                    "UndoScript":  [
-                                                       "\r\n      Write-Host \"Install OneDrive\"\r\n      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait\r\n      "
-                                                   ],
-                                    "link":  "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"
-                                },
+    "WPFTweaksOORemove":  {
+                              "Content":  "Remove OneDrive and Outlook for Windows",
+                              "Description":  "Moves OneDrive files to Default Home Folders and uninstalls OneDrive and Outlook for Windows. CREDIT: @mre31",
+                              "category":  "z__Advanced Tweaks - CAUTION",
+                              "panel":  "1",
+                              "Order":  "a030_",
+                              "InvokeScript":  [
+                                                   "Invoke-WPFOORemove"
+                                               ],
+                              "UndoScript":  [
+                                                 "Invoke-WPFUndoOORemove"
+                                             ],
+                              "link":  "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"
+                          },
     "WPFTweaksRazerBlock":  {
                                 "Content":  "Block Razer Software Installs",
                                 "Description":  "Blocks ALL Razer Software installations. The hardware works fine without any software.",
@@ -14050,7 +14461,7 @@ $sync.configs.tweaks = @'
                                                                "Name":  "DisableNotificationCenter",
                                                                "Type":  "DWord",
                                                                "Value":  "1",
-                                                               "OriginalValue":  "\u003cRemoveEntry\u003e"
+                                                               "OriginalValue":  "\r\n                                                                                                                                \u003cRemoveEntry\u003e"
                                                            },
                                                            {
                                                                "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
@@ -14217,7 +14628,7 @@ $sync.configs.tweaks = @'
                                               "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
                                               "Name":  "AllowGameDVR",
                                               "Value":  "0",
-                                              "OriginalValue":  "\u003cRemoveEntry\u003e",
+                                              "OriginalValue":  "\r\n                                                                                                                                    \u003cRemoveEntry\u003e",
                                               "Type":  "DWord"
                                           }
                                       ],
@@ -14730,7 +15141,7 @@ $sync.configs.tweaks = @'
                                   "link":  "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD"
                               },
     "WPFOOSUbutton":  {
-                          "Content":  "Run OO Shutup 10",
+                          "Content":  "Customize O\u0026O Shutup 10",
                           "category":  "z__Advanced Tweaks - CAUTION",
                           "panel":  "1",
                           "Order":  "a039_",
@@ -14763,7 +15174,21 @@ $sync.configs.tweaks = @'
                              "Type":  "Button",
                              "ButtonWidth":  "300",
                              "link":  "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
-                         }
+                         },
+    "WPFTweaksOOSU10":  {
+                            "Content":  "Run O\u0026O ShutUp 10",
+                            "Description":  "Applies recommended settings from O\u0026O ShutUp 10 automatically.",
+                            "category":  "Essential Tweaks",
+                            "panel":  "1",
+                            "Order":  "a003_",
+                            "InvokeScript":  [
+                                                 "Invoke-WPFOOSUAuto -recommended"
+                                             ],
+                            "UndoScript":  [
+                                               "Invoke-WPFOOSUAuto -default"
+                                           ],
+                            "link":  "https://www.oo-software.com/en/shutup10"
+                        }
 }
 '@ | ConvertFrom-Json
 $inputXML = @'

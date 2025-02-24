@@ -1,0 +1,166 @@
+# This script removes both the OneDrive and the new Outlook applications from Windows. It closes all Outlook and OneDrive processes, completely uninstalls/removes OneDrive and Outlook plus integrations,
+# and cleans up any remaining folders and registry keys/items from those applications on the system.
+# It is based on a script called "uninstall_oo.ps1" originally written by @mre31 on GitHub, but modified and adapted to work within WinUtil.
+# The old WinUtil functionality of copying OneDrive folder contents to the user directory has been retained.
+# The majority of this script has been gracefully provided under the terms of the BSD 3-Clause License.
+# The original version of this script can be found in this source repository here: https://github.com/mre31/oouninstaller
+# Thank you to @mre31 for his work. Without it, this would otherwise not have been possible.
+
+function Invoke-WPFOORemove {
+
+# Run with highest privileges
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    try {
+        Start-Process PowerShell -Verb RunAs "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -WindowStyle Hidden
+        exit
+    }
+    catch {
+        exit
+    }
+}
+
+try {
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    $ErrorActionPreference = 'SilentlyContinue'
+
+    # Close Outlook processes
+    Get-Process | Where-Object { $_.ProcessName -like "*outlook*" } | Stop-Process -Force
+    Start-Sleep -Seconds 2
+
+    # Remove Outlook apps
+    Get-AppxPackage *Microsoft.Office.Outlook* | Remove-AppxPackage
+    Get-AppxProvisionedPackage -Online | Where-Object {$_.PackageName -like "*Microsoft.Office.Outlook*"} | Remove-AppxProvisionedPackage -Online
+    Get-AppxPackage *Microsoft.OutlookForWindows* | Remove-AppxPackage
+    Get-AppxProvisionedPackage -Online | Where-Object {$_.PackageName -like "*Microsoft.OutlookForWindows*"} | Remove-AppxProvisionedPackage -Online
+
+    # Remove Outlook folders
+    $windowsAppsPath = "C:\Program Files\WindowsApps"
+    $outlookFolders = Get-ChildItem -Path $windowsAppsPath -Directory | Where-Object { $_.Name -like "Microsoft.OutlookForWindows*" }
+    foreach ($folder in $outlookFolders) {
+        $folderPath = Join-Path $windowsAppsPath $folder.Name
+        takeown /f $folderPath /r /d Y | Out-Null
+        icacls $folderPath /grant administrators:F /t | Out-Null
+        Remove-Item -Path $folderPath -Recurse -Force
+    }
+
+    # Remove shortcuts
+    $shortcutPaths = @(
+        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Outlook.lnk",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Outlook.lnk",
+        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Office\Outlook.lnk",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Microsoft Office\Outlook.lnk",
+        "$env:PUBLIC\Desktop\Outlook.lnk",
+        "$env:USERPROFILE\Desktop\Outlook.lnk",
+        "$env:PUBLIC\Desktop\Microsoft Outlook.lnk",
+        "$env:USERPROFILE\Desktop\Microsoft Outlook.lnk",
+        "$env:PUBLIC\Desktop\Outlook (New).lnk",
+        "$env:USERPROFILE\Desktop\Outlook (New).lnk",
+        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Outlook (New).lnk",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Outlook (New).lnk"
+    )
+    $shortcutPaths | ForEach-Object { Remove-Item $_ -Force }
+
+    # Taskbar cleanup
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -Type DWord -Force
+
+    $registryPaths = @(
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\TaskbarMRU",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\TaskBar",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    )
+    foreach ($path in $registryPaths) {
+        if (Test-Path $path) {
+            @("Favorites", "FavoritesResolve", "FavoritesChanges", "FavoritesRemovedChanges", "TaskbarWinXP", "PinnedItems") |
+            ForEach-Object { Remove-ItemProperty -Path $path -Name $_ -ErrorAction SilentlyContinue }
+        }
+    }
+
+    Remove-Item "$env:LOCALAPPDATA\Microsoft\Windows\Shell\LayoutModification.xml" -Force
+    Remove-Item "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\iconcache*" -Force
+    Remove-Item "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\thumbcache*" -Force
+
+    # OneDrive removal
+    Get-Process | Where-Object { $_.ProcessName -like "*onedrive*" } | Stop-Process -Force
+    if (Test-Path "$env:SystemRoot\SysWOW64\OneDriveSetup.exe") {
+        & "$env:SystemRoot\SysWOW64\OneDriveSetup.exe" /uninstall
+    } elseif (Test-Path "$env:SystemRoot\System32\OneDriveSetup.exe") {
+        & "$env:SystemRoot\System32\OneDriveSetup.exe" /uninstall
+    }
+
+    # Retain Older WinUtil OneDrive Removal Functionality: Copy OneDrive Folder Contents (if any) to the root of the UserProfile
+    $OneDrivePath = $env:OneDrive
+    if (Test-Path $OneDrivePath) {
+        Write-Host "Copy downloaded files from the OneDrive folder to the Root UserProfile"
+        Start-Process -FilePath powershell -ArgumentList "robocopy '$OneDrivePath' '$($env:USERPROFILE.TrimEnd())\' /mov /e /xj" -NoNewWindow -Wait
+    }
+
+    # Remove OneDrive-Related Folders and Some Registry Keys
+    @(
+        "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk",
+        "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk",
+        "$env:PUBLIC\Desktop\OneDrive.lnk",
+        "$env:USERPROFILE\Desktop\OneDrive.lnk",
+        "$env:USERPROFILE\OneDrive",
+        "$env:LOCALAPPDATA\Microsoft\OneDrive",
+        "$env:ProgramData\Microsoft\OneDrive",
+        "$env:SystemDrive\OneDriveTemp"
+    ) | ForEach-Object { Remove-Item $_ -Force -Recurse }
+
+    @(
+        "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}",
+        "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{018D5C66-4533-4307-9B53-224DE2ED1FE6}",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StorageProvider\OneDrive",
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StorageProviderStatus\OneDrive"
+    ) | ForEach-Object { Remove-Item -Path $_ -Recurse -Force }
+
+    # Registry cleanup
+    $runNotificationPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunNotification"
+    if (Test-Path $runNotificationPath) {
+        Get-Item -Path $runNotificationPath |
+        Select-Object -ExpandProperty Property |
+        Where-Object { $_ -like "StartupTNotiOneDrive*" } |
+        ForEach-Object { Remove-ItemProperty -Path $runNotificationPath -Name $_ -Force }
+    }
+
+    # Registry cleanup
+    $compatStorePath = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store"
+    if (Test-Path $compatStorePath) {
+        Get-Item -Path $compatStorePath |
+        Select-Object -ExpandProperty Property |
+        Where-Object { $_ -like "*OneDrive*" } |
+        ForEach-Object { Remove-ItemProperty -Path $compatStorePath -Name $_ -Force }
+    }
+
+    # Registry cleanup
+    $winlogonPath = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon"
+    if (Test-Path $winlogonPath) {
+        Remove-ItemProperty -Path $winlogonPath -Name "ExcludeProfileDirs" -Force -ErrorAction SilentlyContinue
+    }
+
+    # Registry cleanup
+    $regAppsPath = "HKCU:\Software\RegisteredApplications"
+    if (Test-Path $regAppsPath) {
+        Remove-ItemProperty -Path $regAppsPath -Name "OneDrive" -Force -ErrorAction SilentlyContinue
+    }
+
+    # Shell Folders edit
+    $username = $env:USERNAME
+    $shellFoldersPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
+
+    # Edit folders
+    Set-ItemProperty -Path $shellFoldersPath -Name "My Music" -Value "C:\Users\$username\Music" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "My Pictures" -Value "C:\Users\$username\Pictures" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "My Video" -Value "C:\Users\$username\Videos" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "Personal" -Value "C:\Users\$username\Documents" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "Desktop" -Value "C:\Users\$username\Desktop" -Type String -Force
+    Set-ItemProperty -Path $shellFoldersPath -Name "Favorites" -Value "C:\Users\$username\Favorites" -Type String -Force
+
+    # Restart Explorer
+    Get-Process explorer | Stop-Process -Force
+    Start-Sleep -Seconds 2
+    Start-Process explorer
+}
+catch {}
+} # End Invoke-WPFOORemove
