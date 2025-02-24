@@ -34,7 +34,7 @@ if ($appxPackages) {
 
 Write-Host "Attempting to remove Copilot package using winget..."
 if (Get-Command winget -ErrorAction SilentlyContinue) {
-    winget uninstall --id 9NHT9RB2F4HD -e
+    & winget uninstall --id 9NHT9RB2F4HD -e --accept-package-agreements --accept-source-agreements
 } else {
     Write-Host "winget command not found on this system."
 }
