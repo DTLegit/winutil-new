@@ -230,16 +230,19 @@ if (-not $WUSettings) { $allGood = $false }
          ($WUSettings.ExcludeWUDriversInQualityUpdate -ne 1) ) {
         $allGood = $false
     }
-}
 
 # Check Device Metadata settings
 $DevMetaPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata"
-try {
-    $DevMetaSettings = Get-ItemProperty -Path $DevMetaPath -ErrorAction Stop
-} catch {
+$oldEAP = $ErrorActionPreference
+$ErrorActionPreference = "SilentlyContinue"
+if (Test-Path $DevMetaPath) {
+    $DevMetaSettings = Get-ItemProperty -Path $DevMetaPath 2>$null
+} else {
+    $DevMetaSettings = $null
     $allGood = $false
 }
-if ($allGood -and ($DevMetaSettings.PreventDeviceMetadataFromNetwork -ne 1)) {
+$ErrorActionPreference = $oldEAP
+if ($allGood -and ($DevMetaSettings -eq $null -or $DevMetaSettings.PreventDeviceMetadataFromNetwork -ne 1)) {
     $allGood = $false
 }
 
@@ -493,7 +496,12 @@ if ($TimeSpan.TotalDays -ge 364) {
 
     # Device Metadata
     $DevMetaPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata"
-    $DevMetaSettings = Get-ItemProperty -Path $DevMetaPath -ErrorAction SilentlyContinue
+    if (Test-Path $DevMetaPath) {
+        $DevMetaSettings = Get-ItemProperty -Path $DevMetaPath -ErrorAction SilentlyContinue 2>$null
+    } else {
+        $DevMetaSettings = $null
+    }
+
     if ($null -eq $DevMetaSettings -or $DevMetaSettings.PreventDeviceMetadataFromNetwork -ne 1) {
         if (-not $Silent) { Write-Host "DEBUG: Device Metadata settings discrepancy found." }
         $ReapplyNeeded = $true
