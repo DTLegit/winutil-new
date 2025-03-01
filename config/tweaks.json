@@ -3667,5 +3667,18 @@
       "Invoke-WPFOOSUAuto -default"
     ],
     "link": "https://www.oo-software.com/en/shutup10"
+  },
+  "WPFTweaksSecurityUpdates": {
+    "Content": "Enable Security Only Updates (Target Release Version)",
+    "Description": "Windows Update will only install security updates and quality updates are delayed by 4 days for the most stability. See Updates tab for details.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a017_",
+    "InvokeScript": [
+      "Invoke-WPFUpdatessecurity"
+    ],
+    "UndoScript": [
+      "Invoke-WPFUpdatesdefault"
+    ]
   }
 }
