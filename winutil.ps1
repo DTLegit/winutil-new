@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 25.02.28
+    Version        : 25.03.01
 #>
 
 param (
@@ -40,7 +40,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "25.02.28"
+$sync.version = "25.03.01"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -6988,6 +6988,61 @@ function Invoke-WPFTab {
         }
     }
 }
+function Invoke-WPFToggleBlackTaskbarStartMenu {
+
+# Set the UI accent color to black and enable the black taskbar and Start Menu
+# Define the registry key path
+$keyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent"
+
+# Create the key if it doesn't exist
+if (-not (Test-Path $keyPath)) {
+    New-Item -Path $keyPath -Force | Out-Null
+}
+
+# Set "AccentPalette" to 32 bytes of 0x00 (i.e. 32 pairs of 0s)
+$data = New-Object Byte[] 32
+Set-ItemProperty -Path $keyPath -Name "AccentPalette" -Value $data
+
+# Set "StartColorMenu" to DWORD 0
+New-ItemProperty -Path $keyPath -Name "StartColorMenu" -PropertyType DWord -Value 0 -Force | Out-Null
+
+# Set "AccentColorMenu" to DWORD 0
+New-ItemProperty -Path $keyPath -Name "AccentColorMenu" -PropertyType DWord -Value 0 -Force | Out-Null
+
+Write-Host "Dark mode and Black Taskbar + Start Menu applied."
+Write-Host "You may need to restart your computer for this to take into effect."
+
+Invoke-WinUtilExplorerUpdate
+if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+    Invoke-WinutilThemeChange -theme "Auto"
+}
+
+} # End function Invoke-WPFToggleBlackTaskbarStartMenu
+
+
+function Invoke-UndoWPFToggleBlackTaskbarStartMenu {
+
+# Remove custom accent settings to restore the automatic system accent color
+
+# Remove the custom AccentPalette if it exists
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent" -Name "AccentPalette" -ErrorAction SilentlyContinue
+
+# Remove custom StartColorMenu setting (for Start menu/taskbar)
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent" -Name "StartColorMenu" -ErrorAction SilentlyContinue
+
+# Remove custom AccentColorMenu setting (for menus and title bars)
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent" -Name "AccentColorMenu" -ErrorAction SilentlyContinue
+
+Write-Host "Custom accent color settings removed. Windows will now use the default accent color."
+Write-Host "Light mode and default settings restored."
+Write-Host "You may need to either sign out and sign back in, or fully restart your computer for changes to take full effect."
+
+Invoke-WinUtilExplorerUpdate
+if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+    Invoke-WinutilThemeChange -theme "Auto"
+  }
+} # End function Invoke-UndoWPFToggleBlackTaskbarStartMenu
+
 function Invoke-WPFTweakPS7{
         <#
     .SYNOPSIS
@@ -14828,7 +14883,7 @@ $sync.configs.tweaks = @'
                                 "Description":  "If enable then includes web search results from Bing in your Start Menu search.",
                                 "category":  "Customize Preferences",
                                 "panel":  "2",
-                                "Order":  "a101_",
+                                "Order":  "a102_",
                                 "Type":  "Toggle",
                                 "registry":  [
                                                  {
@@ -14847,7 +14902,7 @@ $sync.configs.tweaks = @'
                              "Description":  "Toggle the Num Lock key state when your computer starts.",
                              "category":  "Customize Preferences",
                              "panel":  "2",
-                             "Order":  "a102_",
+                             "Order":  "a103_",
                              "Type":  "Toggle",
                              "registry":  [
                                               {
@@ -14874,7 +14929,7 @@ $sync.configs.tweaks = @'
                                   "Description":  "Show detailed messages during the login process for troubleshooting and diagnostics.",
                                   "category":  "Customize Preferences",
                                   "panel":  "2",
-                                  "Order":  "a103_",
+                                  "Order":  "a104_",
                                   "Type":  "Toggle",
                                   "registry":  [
                                                    {
@@ -14893,7 +14948,7 @@ $sync.configs.tweaks = @'
                                               "Description":  "If disabled then you will not see recommendations in the Start Menu. | Enables \u0027iseducationenvironment\u0027 | Relogin Required.",
                                               "category":  "Customize Preferences",
                                               "panel":  "2",
-                                              "Order":  "a104_",
+                                              "Order":  "a105_",
                                               "Type":  "Toggle",
                                               "registry":  [
                                                                {
@@ -14928,7 +14983,7 @@ $sync.configs.tweaks = @'
                                 "Description":  "If enabled you can align windows by dragging them. | Relogin Required",
                                 "category":  "Customize Preferences",
                                 "panel":  "2",
-                                "Order":  "a105_",
+                                "Order":  "a106_",
                                 "Type":  "Toggle",
                                 "registry":  [
                                                  {
@@ -14947,7 +15002,7 @@ $sync.configs.tweaks = @'
                                 "Description":  "If enabled then Snap preview is disabled when maximize button is hovered.",
                                 "category":  "Customize Preferences",
                                 "panel":  "2",
-                                "Order":  "a106_",
+                                "Order":  "a107_",
                                 "Type":  "Toggle",
                                 "registry":  [
                                                  {
@@ -14972,7 +15027,7 @@ $sync.configs.tweaks = @'
                                     "Description":  "If enabled then you will get suggestions to snap other applications in the left over spaces.",
                                     "category":  "Customize Preferences",
                                     "panel":  "2",
-                                    "Order":  "a107_",
+                                    "Order":  "a108_",
                                     "Type":  "Toggle",
                                     "registry":  [
                                                      {
@@ -14997,7 +15052,7 @@ $sync.configs.tweaks = @'
                                        "Description":  "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
                                        "category":  "Customize Preferences",
                                        "panel":  "2",
-                                       "Order":  "a108_",
+                                       "Order":  "a109_",
                                        "Type":  "Toggle",
                                        "registry":  [
                                                         {
@@ -15032,7 +15087,7 @@ $sync.configs.tweaks = @'
                                 "Description":  "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
                                 "category":  "Customize Preferences",
                                 "panel":  "2",
-                                "Order":  "a109_",
+                                "Order":  "a200_",
                                 "Type":  "Toggle",
                                 "registry":  [
                                                  {
@@ -15051,7 +15106,7 @@ $sync.configs.tweaks = @'
                                  "Description":  "If Enabled then Hidden Files will be shown.",
                                  "category":  "Customize Preferences",
                                  "panel":  "2",
-                                 "Order":  "a200_",
+                                 "Order":  "a201_",
                                  "Type":  "Toggle",
                                  "registry":  [
                                                   {
@@ -15076,7 +15131,7 @@ $sync.configs.tweaks = @'
                              "Description":  "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
                              "category":  "Customize Preferences",
                              "panel":  "2",
-                             "Order":  "a201_",
+                             "Order":  "a202_",
                              "Type":  "Toggle",
                              "registry":  [
                                               {
@@ -15101,7 +15156,7 @@ $sync.configs.tweaks = @'
                                    "Description":  "If Enabled Search Button will be on the taskbar.",
                                    "category":  "Customize Preferences",
                                    "panel":  "2",
-                                   "Order":  "a202_",
+                                   "Order":  "a203_",
                                    "Type":  "Toggle",
                                    "registry":  [
                                                     {
@@ -15120,7 +15175,7 @@ $sync.configs.tweaks = @'
                               "Description":  "If Enabled then Task View Button in Taskbar will be shown.",
                               "category":  "Customize Preferences",
                               "panel":  "2",
-                              "Order":  "a203_",
+                              "Order":  "a204_",
                               "Type":  "Toggle",
                               "registry":  [
                                                {
@@ -15139,7 +15194,7 @@ $sync.configs.tweaks = @'
                                     "Description":  "If Enabled then Widgets Button in Taskbar will be shown.",
                                     "category":  "Customize Preferences",
                                     "panel":  "2",
-                                    "Order":  "a204_",
+                                    "Order":  "a205_",
                                     "Type":  "Toggle",
                                     "registry":  [
                                                      {
@@ -15158,7 +15213,7 @@ $sync.configs.tweaks = @'
                                       "Description":  "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
                                       "category":  "Customize Preferences",
                                       "panel":  "2",
-                                      "Order":  "a204_",
+                                      "Order":  "a206_",
                                       "Type":  "Toggle",
                                       "registry":  [
                                                        {
@@ -15177,7 +15232,7 @@ $sync.configs.tweaks = @'
                                   "Description":  "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
                                   "category":  "Customize Preferences",
                                   "panel":  "2",
-                                  "Order":  "a205_",
+                                  "Order":  "a207_",
                                   "Type":  "Toggle",
                                   "registry":  [
                                                    {
@@ -15260,7 +15315,64 @@ $sync.configs.tweaks = @'
                                      "UndoScript":  [
                                                         "Invoke-WPFUpdatesdefault"
                                                     ]
-                                 }
+                                 },
+    "WPFToggleBlackTaskbarStartMenu":  {
+                                           "Content":  "Enable Black Theme, Start Menu, and Taskbar - NOTE: Hover over for more details.",
+                                           "Description":  "Enables Dark Mode and Sets the System Accent Color, Start Menu, and Taskbar to a black color. NOTE: This may cause some UI Inconsistencies, so use with care. A reboot may be needed after enabling this setting.",
+                                           "category":  "Customize Preferences",
+                                           "panel":  "2",
+                                           "Order":  "a101_",
+                                           "Type":  "Toggle",
+                                           "registry":  [
+                                                            {
+                                                                "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+                                                                "Name":  "AppsUseLightTheme",
+                                                                "Value":  "0",
+                                                                "OriginalValue":  "1",
+                                                                "DefaultState":  "false",
+                                                                "Type":  "DWord"
+                                                            },
+                                                            {
+                                                                "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+                                                                "Name":  "SystemUsesLightTheme",
+                                                                "Value":  "0",
+                                                                "OriginalValue":  "1",
+                                                                "DefaultState":  "false",
+                                                                "Type":  "DWord"
+                                                            },
+                                                            {
+                                                                "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+                                                                "Name":  "EnableTransparency",
+                                                                "Value":  "0",
+                                                                "OriginalValue":  "1",
+                                                                "DefaultState":  "false",
+                                                                "Type":  "DWord"
+                                                            },
+                                                            {
+                                                                "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+                                                                "Name":  "ColorPrevalence",
+                                                                "Value":  "1",
+                                                                "OriginalValue":  "0",
+                                                                "DefaultState":  "false",
+                                                                "Type":  "DWord"
+                                                            },
+                                                            {
+                                                                "Path":  "HKCU:\\Software\\Microsoft\\Windows\\DWM",
+                                                                "Name":  "ColorPrevalence",
+                                                                "Value":  "1",
+                                                                "DefaultValue":  "0",
+                                                                "DefaultState":  "false",
+                                                                "Type":  "DWord"
+                                                            }
+                                                        ],
+                                           "InvokeScript":  [
+                                                                "Invoke-WPFToggleBlackTaskbarStartMenu"
+                                                            ],
+                                           "UndoScript":  [
+                                                              "Invoke-UndoWPFToggleBlackTaskbarStartMenu"
+                                                          ],
+                                           "link":  "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
+                                       }
 }
 '@ | ConvertFrom-Json
 $inputXML = @'

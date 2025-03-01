@@ -3232,7 +3232,7 @@
     "Description": "If enable then includes web search results from Bing in your Start Menu search.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a101_",
+    "Order": "a102_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3251,7 +3251,7 @@
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a102_",
+    "Order": "a103_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3278,7 +3278,7 @@
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a103_",
+    "Order": "a104_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3297,7 +3297,7 @@
     "Description": "If disabled then you will not see recommendations in the Start Menu. | Enables 'iseducationenvironment' | Relogin Required.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a104_",
+    "Order": "a105_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3332,7 +3332,7 @@
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a105_",
+    "Order": "a106_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3351,7 +3351,7 @@
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a106_",
+    "Order": "a107_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3380,7 +3380,7 @@
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a107_",
+    "Order": "a108_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3409,7 +3409,7 @@
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a108_",
+    "Order": "a109_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3444,7 +3444,7 @@
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a109_",
+    "Order": "a200_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3463,7 +3463,7 @@
     "Description": "If Enabled then Hidden Files will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a200_",
+    "Order": "a201_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3492,7 +3492,7 @@
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a201_",
+    "Order": "a202_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3521,7 +3521,7 @@
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a202_",
+    "Order": "a203_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3540,7 +3540,7 @@
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a203_",
+    "Order": "a204_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3559,7 +3559,7 @@
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a204_",
+    "Order": "a205_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3578,7 +3578,7 @@
     "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a204_",
+    "Order": "a206_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3597,7 +3597,7 @@
     "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a205_",
+    "Order": "a207_",
     "Type": "Toggle",
     "registry": [
       {
@@ -3680,5 +3680,62 @@
     "UndoScript": [
       "Invoke-WPFUpdatesdefault"
     ]
+  },
+  "WPFToggleBlackTaskbarStartMenu": {
+    "Content": "Enable Black Theme, Start Menu, and Taskbar - NOTE: Hover over for more details.",
+    "Description": "Enables Dark Mode and Sets the System Accent Color, Start Menu, and Taskbar to a black color. NOTE: This may cause some UI Inconsistencies, so use with care. A reboot may be needed after enabling this setting.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a101_",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "AppsUseLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "false",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "SystemUsesLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "false",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "EnableTransparency",
+        "Value": "0",
+        "OriginalValue": "1",
+        "DefaultState": "false",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "ColorPrevalence",
+        "Value": "1",
+        "OriginalValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
+        "Name": "ColorPrevalence",
+        "Value": "1",
+        "DefaultValue": "0",
+        "DefaultState": "false",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "Invoke-WPFToggleBlackTaskbarStartMenu"
+    ],
+    "UndoScript": [
+      "Invoke-UndoWPFToggleBlackTaskbarStartMenu"
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
   }
 }
