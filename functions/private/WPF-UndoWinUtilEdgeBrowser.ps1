@@ -188,11 +188,8 @@ if (-not $downloadSucceeded) {
 if ($installerFile.Extension -eq ".msi") {
     Write-Host "Detected MSI installer. Launching interactive installation of Microsoft Edge..."
     Write-Host "The Edge installer may seem to hang while installing. This is expected. Please be prepared to wait a few minutes." -ForegroundColor Cyan
-    # Define the log file path on the Desktop.
-    $desktopPath = [Environment]::GetFolderPath("Desktop")
-    $msiLogPath = Join-Path $desktopPath "msiexec.log"
-    # Launch interactive install (no /quiet or /silent)
-    $msiArgs = "/i `"$($installerFile.FullName)`" /norestart /l*v `"$msiLogPath`""
+    # Launch interactive install (no /quiet or /silent, and without logging parameters)
+    $msiArgs = "/i `"$($installerFile.FullName)`" /norestart"
     $installerProcess = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait -PassThru -Verb RunAs
 }
 else {
@@ -219,10 +216,8 @@ if ((-not (Test-Path $edgeDesktopShortcut)) -and (-not (Test-Path $edgeStartMenu
     Write-Host "The Edge installer may seem to hang while installing. This is expected. Please be prepared to wait a few minutes." -ForegroundColor Cyan
 
     if ($installerFile.Extension -eq ".msi") {
-        # For MSI installers, run with forced reinstall parameters and silent switches.
-        $desktopPath = [Environment]::GetFolderPath("Desktop")
-        $msiLogPathForced = Join-Path $desktopPath "msiexec_forced.log"
-        $msiArgsForced = "/i `"$($installerFile.FullName)`" REINSTALL=ALL REINSTALLMODE=vomus /norestart /l*v `"$msiLogPathForced`""
+        # For MSI installers, run with forced reinstall parameters and silent switches (without logging parameters).
+        $msiArgsForced = "/i `"$($installerFile.FullName)`" REINSTALL=ALL REINSTALLMODE=vomus /norestart"
         $installerProcessForced = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgsForced -Wait -PassThru -Verb RunAs
     }
     else {
@@ -311,8 +306,4 @@ Start-Process -FilePath "reg.exe" -ArgumentList 'add "HKLM\SOFTWARE\Microsoft\Wi
 Write-Host "Microsoft Edge installation and full system cleanup process is complete. You might want to ensure that all Edge install components are removed by making sure that all temporary files are cleaned via the Windows storage settings. Simply search for 'Storage' in the settings search, click on 'Storage Settings' and go to 'Temporary Files' to get to the storage cleanup menu." -ForegroundColor Cyan
 
 Write-Host "Edge has been successfully reinstalled." -ForegroundColor Green
-Write-Host "Either one or two .msi install log files have been saved to your desktop folder in case if something has gone wrong." -ForegroundColor Cyan
-Write-Host "Please feel free to delete the log files and/or drag them to your Recycle Bin if the Edge install was successful and is in working order." -ForegroundColor Cyan
-
-
-} # End of Uninstall-WinUtilEdgeBrowser
+} #End WPF-UndoWinUtilEdgeBrowser

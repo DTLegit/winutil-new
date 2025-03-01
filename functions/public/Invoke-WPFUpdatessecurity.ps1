@@ -39,17 +39,6 @@ if (-not (Test-Admin)) {
     exit
 }
 
-# ----- Start logging for the mother script (this script) to Desktop -----
-try {
-    $DesktopPath  = [Environment]::GetFolderPath("Desktop")
-    $Timestamp    = (Get-Date).ToString("yyyyMMddHHmmss")
-    $MotherLog    = Join-Path $DesktopPath "Setup-SecurityUpdateTasks-$Timestamp.log"
-    Start-Transcript -Path $MotherLog -Append | Out-Null
-    Write-Host "Logging mother script output to: $MotherLog"
-} catch {
-    Write-Host "WARNING: Failed to start transcript for the mother script. $_"
-}
-
 # ----- Define folder and file paths -----
 $ScheduledFolder = "C:\ProgramData\UpdateWindowsUpdatePoliciesAnnually"
 if (-not (Test-Path $ScheduledFolder)) {
@@ -601,13 +590,6 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 # Optionally, reset the execution policy back to what it was (though for Process scope, it would be reset on exit)
 Set-ExecutionPolicy -ExecutionPolicy $oldPolicy -Scope Process -Force
 
-Write-Host "Optimal and Security-Only Update Settings Applied! Security_Only_Script .log file is saved to desktop." -ForegroundColor Green
-
-# ----- Stop transcript for mother script -----
-try {
-    Stop-Transcript | Out-Null
-} catch {
-    Write-Host "No transcript was active or couldn't stop transcript: $_"
-}
+Write-Host "Optimal and Security-Only Update Settings Applied!" -ForegroundColor Green
 
 } # End Invoke-WPFUpdatessecurity
