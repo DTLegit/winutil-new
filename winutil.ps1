@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 25.02.24
+    Version        : 25.02.28
 #>
 
 param (
@@ -40,7 +40,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "25.02.24"
+$sync.version = "25.02.28"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -12051,21 +12051,21 @@ $sync.configs.tweaks = @'
                                              "Name":  "EnableActivityFeed",
                                              "Type":  "DWord",
                                              "Value":  "0",
-                                             "OriginalValue":  "\r\n\u003cRemoveEntry\u003e"
+                                             "OriginalValue":  "\u003cRemoveEntry\u003e"
                                          },
                                          {
                                              "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
                                              "Name":  "PublishUserActivities",
                                              "Type":  "DWord",
                                              "Value":  "0",
-                                             "OriginalValue":  "\r\n    \u003cRemoveEntry\u003e"
+                                             "OriginalValue":  "\u003cRemoveEntry\u003e"
                                          },
                                          {
                                              "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
                                              "Name":  "UploadUserActivities",
                                              "Type":  "DWord",
                                              "Value":  "0",
-                                             "OriginalValue":  "\r\n        \u003cRemoveEntry\u003e"
+                                             "OriginalValue":  "\u003cRemoveEntry\u003e"
                                          }
                                      ],
                         "link":  "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
@@ -13620,126 +13620,126 @@ $sync.configs.tweaks = @'
                                                       "Name":  "CreateDesktopShortcutDefault",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n            \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "PersonalizationReportingEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "ShowRecommendationsEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                    \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "HideFirstRunExperience",
                                                       "Type":  "DWord",
                                                       "Value":  "1",
-                                                      "OriginalValue":  "\r\n                        \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "UserFeedbackAllowed",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                            \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "ConfigureDoNotTrack",
                                                       "Type":  "DWord",
                                                       "Value":  "1",
-                                                      "OriginalValue":  "\r\n                                \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "AlternateErrorPagesEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                    \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "EdgeCollectionsEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                        \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "EdgeShoppingAssistantEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                            \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "MicrosoftEdgeInsiderPromotionEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                                \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "PersonalizationReportingEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                                    \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "ShowMicrosoftRewards",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                                        \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "WebWidgetAllowed",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                                            \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "DiagnosticData",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                                                \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "EdgeAssetDeliveryServiceEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                                                    \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "EdgeCollectionsEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                                                        \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "CryptoWalletEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                                                            \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   },
                                                   {
                                                       "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
                                                       "Name":  "WalletDonationEnabled",
                                                       "Type":  "DWord",
                                                       "Value":  "0",
-                                                      "OriginalValue":  "\r\n                                                                                \u003cRemoveEntry\u003e"
+                                                      "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                   }
                                               ],
                                  "link":  "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
@@ -13753,7 +13753,7 @@ $sync.configs.tweaks = @'
                                       "registry":  [
                                                        {
                                                            "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-                                                           "OriginalValue":  "\r\n                                                                                    \u003cRemoveEntry\u003e",
+                                                           "OriginalValue":  "\u003cRemoveEntry\u003e",
                                                            "Name":  "DisableWindowsConsumerFeatures",
                                                            "Value":  "1",
                                                            "Type":  "DWord"
@@ -13840,11 +13840,11 @@ $sync.configs.tweaks = @'
                                                "Type":  "DWord",
                                                "Value":  "0",
                                                "Name":  "AllowTelemetry",
-                                               "OriginalValue":  "\r\n                                                                                        \u003cRemoveEntry\u003e"
+                                               "OriginalValue":  "\u003cRemoveEntry\u003e"
                                            },
                                            {
                                                "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-                                               "OriginalValue":  "\r\n                                                                                            \u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
                                                "Name":  "AllowTelemetry",
                                                "Value":  "0",
                                                "Type":  "DWord"
@@ -13928,21 +13928,21 @@ $sync.configs.tweaks = @'
                                            },
                                            {
                                                "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-                                               "OriginalValue":  "\r\n                                                                                                \u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
                                                "Name":  "DoNotShowFeedbackNotifications",
                                                "Value":  "1",
                                                "Type":  "DWord"
                                            },
                                            {
                                                "Path":  "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-                                               "OriginalValue":  "\r\n                                                                                                    \u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
                                                "Name":  "DisableTailoredExperiencesWithDiagnosticData",
                                                "Value":  "1",
                                                "Type":  "DWord"
                                            },
                                            {
                                                "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
-                                               "OriginalValue":  "\r\n                                                                                                        \u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
                                                "Name":  "DisabledByGroupPolicy",
                                                "Value":  "1",
                                                "Type":  "DWord"
@@ -14069,7 +14069,7 @@ $sync.configs.tweaks = @'
                                            },
                                            {
                                                "Path":  "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
-                                               "OriginalValue":  "\r\n                                                                                                            \u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
                                                "Name":  "EnableFeeds",
                                                "Value":  "0",
                                                "Type":  "DWord"
@@ -14083,7 +14083,7 @@ $sync.configs.tweaks = @'
                                            },
                                            {
                                                "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-                                               "OriginalValue":  "\r\n                                                                                                                \u003cRemoveEntry\u003e",
+                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
                                                "Name":  "HideSCAMeetNow",
                                                "Value":  "1",
                                                "Type":  "DWord"
@@ -14426,7 +14426,7 @@ $sync.configs.tweaks = @'
                             },
     "WPFTweaksRemoveCopilot":  {
                                    "Content":  "Disable Microsoft Copilot",
-                                   "Description":  "Disables and removes MS Copilot AI built into Windows since 23H2.",
+                                   "Description":  "Disables MS Copilot AI built into Windows since 23H2.",
                                    "category":  "z__Advanced Tweaks - CAUTION",
                                    "panel":  "1",
                                    "Order":  "a025_",
@@ -14450,7 +14450,7 @@ $sync.configs.tweaks = @'
                                                     "Name":  "DisableAIDataAnalysis",
                                                     "Type":  "DWord",
                                                     "Value":  "1",
-                                                    "OriginalValue":  "\r\n                                                                                                                            \u003cRemoveEntry\u003e"
+                                                    "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                 }
                                             ],
                                "InvokeScript":  [
@@ -14475,6 +14475,22 @@ $sync.configs.tweaks = @'
                                                 ],
                                  "link":  "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"
                              },
+    "WPFTweaksDisableWpbtExecution":  {
+                                          "Content":  "Disable Windows Platform Binary Table (WPBT)",
+                                          "Description":  "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
+                                          "category":  "z__Advanced Tweaks - CAUTION",
+                                          "panel":  "1",
+                                          "Order":  "a027_",
+                                          "registry":  [
+                                                           {
+                                                               "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager",
+                                                               "Name":  "DisableWpbtExecution",
+                                                               "Value":  "1",
+                                                               "OriginalValue":  "\u003cRemoveEntry\u003e",
+                                                               "Type":  "DWord"
+                                                           }
+                                                       ]
+                                      },
     "WPFTweaksOORemove":  {
                               "Content":  "Remove OneDrive and Outlook for Windows",
                               "Description":  "Moves OneDrive files to Default Home Folders and uninstalls OneDrive and Outlook for Windows. CREDIT: @mre31",
@@ -14531,7 +14547,7 @@ $sync.configs.tweaks = @'
                                                                "Name":  "DisableNotificationCenter",
                                                                "Type":  "DWord",
                                                                "Value":  "1",
-                                                               "OriginalValue":  "\r\n                                                                                                                                \u003cRemoveEntry\u003e"
+                                                               "OriginalValue":  "\u003cRemoveEntry\u003e"
                                                            },
                                                            {
                                                                "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
@@ -14698,7 +14714,7 @@ $sync.configs.tweaks = @'
                                               "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
                                               "Name":  "AllowGameDVR",
                                               "Value":  "0",
-                                              "OriginalValue":  "\r\n                                                                                                                                    \u003cRemoveEntry\u003e",
+                                              "OriginalValue":  "\u003cRemoveEntry\u003e",
                                               "Type":  "DWord"
                                           }
                                       ],

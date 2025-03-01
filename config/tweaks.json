@@ -11,21 +11,21 @@
         "Name": "EnableActivityFeed",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n<RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "PublishUserActivities",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n    <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "Name": "UploadUserActivities",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n        <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
@@ -83,10 +83,28 @@
       }
     ],
     "InvokeScript": [
-      "\r\n      Write-Host \"Turn on Hibernation\"\r\n      Start-Process -FilePath powercfg -ArgumentList \"/hibernate on\" -NoNewWindow -Wait\r\n\r\n      # Set hibernation as the default action\r\n      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 60\" -NoNewWindow -Wait\r\n      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 60\" -NoNewWindow -Wait\r\n      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 10\" -NoNewWindow -Wait\r\n      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 1\" -NoNewWindow -Wait\r\n      "
+      "
+      Write-Host \"Turn on Hibernation\"
+      Start-Process -FilePath powercfg -ArgumentList \"/hibernate on\" -NoNewWindow -Wait
+
+      # Set hibernation as the default action
+      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 60\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 60\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 10\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 1\" -NoNewWindow -Wait
+      "
     ],
     "UndoScript": [
-      "\r\n      Write-Host \"Turn off Hibernation\"\r\n      Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait\r\n\r\n      # Set standby to detault values\r\n      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait\r\n      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 15\" -NoNewWindow -Wait\r\n      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait\r\n      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait\r\n      "
+      "
+      Write-Host \"Turn off Hibernation\"
+      Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait
+
+      # Set standby to detault values
+      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 15\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/LaptopHibernation"
   },
@@ -1580,126 +1598,126 @@
         "Name": "CreateDesktopShortcutDefault",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n            <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "PersonalizationReportingEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ShowRecommendationsEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                    <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "HideFirstRunExperience",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "\r\n                        <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "UserFeedbackAllowed",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                            <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ConfigureDoNotTrack",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "\r\n                                <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "AlternateErrorPagesEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                    <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeCollectionsEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                        <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeShoppingAssistantEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                            <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "MicrosoftEdgeInsiderPromotionEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                                <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "PersonalizationReportingEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                                    <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "ShowMicrosoftRewards",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                                        <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "WebWidgetAllowed",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                                            <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "DiagnosticData",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                                                <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeAssetDeliveryServiceEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                                                    <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "EdgeCollectionsEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                                                        <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "CryptoWalletEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                                                            <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
         "Name": "WalletDonationEnabled",
         "Type": "DWord",
         "Value": "0",
-        "OriginalValue": "\r\n                                                                                <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
@@ -1713,7 +1731,7 @@
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "\r\n                                                                                    <RemoveEntry>",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DisableWindowsConsumerFeatures",
         "Value": "1",
         "Type": "DWord"
@@ -1800,11 +1818,11 @@
         "Type": "DWord",
         "Value": "0",
         "Name": "AllowTelemetry",
-        "OriginalValue": "\r\n                                                                                        <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "\r\n                                                                                            <RemoveEntry>",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "AllowTelemetry",
         "Value": "0",
         "Type": "DWord"
@@ -1888,21 +1906,21 @@
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "\r\n                                                                                                <RemoveEntry>",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DoNotShowFeedbackNotifications",
         "Value": "1",
         "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "\r\n                                                                                                    <RemoveEntry>",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DisableTailoredExperiencesWithDiagnosticData",
         "Value": "1",
         "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
-        "OriginalValue": "\r\n                                                                                                        <RemoveEntry>",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "DisabledByGroupPolicy",
         "Value": "1",
         "Type": "DWord"
@@ -2029,7 +2047,7 @@
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
-        "OriginalValue": "\r\n                                                                                                            <RemoveEntry>",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "EnableFeeds",
         "Value": "0",
         "Type": "DWord"
@@ -2043,7 +2061,7 @@
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "OriginalValue": "\r\n                                                                                                                <RemoveEntry>",
+        "OriginalValue": "<RemoveEntry>",
         "Name": "HideSCAMeetNow",
         "Value": "1",
         "Type": "DWord"
@@ -2057,7 +2075,39 @@
       }
     ],
     "InvokeScript": [
-      "\r\n      bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null\r\n        If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {\r\n            $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru\r\n            Do {\r\n                Start-Sleep -Milliseconds 100\r\n                $preferences = Get-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -ErrorAction SilentlyContinue\r\n            } Until ($preferences)\r\n            Stop-Process $taskmgr\r\n            $preferences.Preferences[28] = 0\r\n            Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences\r\n        }\r\n        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue\r\n\r\n        # Fix Managed by your organization in Edge if regustry path exists then remove it\r\n\r\n        If (Test-Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\") {\r\n            Remove-Item -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\" -Recurse -ErrorAction SilentlyContinue\r\n        }\r\n\r\n        # Group svchost.exe processes\r\n        $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb\r\n        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force\r\n\r\n        $autoLoggerDir = \"$env:PROGRAMDATA\\Microsoft\\Diagnosis\\ETLLogs\\AutoLogger\"\r\n        If (Test-Path \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\") {\r\n            Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"\r\n        }\r\n        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null\r\n\r\n        # Disable Defender Auto Sample Submission\r\n        Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null\r\n        "
+      "
+      bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
+        If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
+            $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
+            Do {
+                Start-Sleep -Milliseconds 100
+                $preferences = Get-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -ErrorAction SilentlyContinue
+            } Until ($preferences)
+            Stop-Process $taskmgr
+            $preferences.Preferences[28] = 0
+            Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences
+        }
+        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue
+
+        # Fix Managed by your organization in Edge if regustry path exists then remove it
+
+        If (Test-Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\") {
+            Remove-Item -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\" -Recurse -ErrorAction SilentlyContinue
+        }
+
+        # Group svchost.exe processes
+        $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
+
+        $autoLoggerDir = \"$env:PROGRAMDATA\\Microsoft\\Diagnosis\\ETLLogs\\AutoLogger\"
+        If (Test-Path \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\") {
+            Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
+        }
+        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
+
+        # Disable Defender Auto Sample Submission
+        Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
+        "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Tele"
   },
@@ -2109,10 +2159,18 @@
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
-      "\r\n      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f\r\n      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f\r\n      REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"\r\n      "
+      "
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f
+      REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"
+      "
     ],
     "UndoScript": [
-      "\r\n      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f /ve /t REG_SZ /d \"{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"\r\n      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"\r\n      REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"\r\n      "
+      "
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f /ve /t REG_SZ /d \"{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"
+      REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"
   },
@@ -2298,7 +2356,40 @@
       "*Microsoft.Advertising.Xaml*"
     ],
     "InvokeScript": [
-      "\r\n        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')\r\n        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')\r\n\r\n        Write-Host \"Stopping Teams process...\"\r\n        Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue\r\n\r\n        Write-Host \"Uninstalling Teams from AppData\\Microsoft\\Teams\"\r\n        if ([System.IO.File]::Exists($TeamsUpdateExePath)) {\r\n            # Uninstall app\r\n            $proc = Start-Process $TeamsUpdateExePath \"-uninstall -s\" -PassThru\r\n            $proc.WaitForExit()\r\n        }\r\n\r\n        Write-Host \"Removing Teams AppxPackage...\"\r\n        Get-AppxPackage \"*Teams*\" | Remove-AppxPackage -ErrorAction SilentlyContinue\r\n        Get-AppxPackage \"*Teams*\" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue\r\n\r\n        Write-Host \"Deleting Teams directory\"\r\n        if ([System.IO.Directory]::Exists($TeamsPath)) {\r\n            Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue\r\n        }\r\n\r\n        Write-Host \"Deleting Teams uninstall registry key\"\r\n        # Uninstall from Uninstall registry key UninstallString\r\n        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString\r\n        if ($us.Length -gt 0) {\r\n            $us = ($us.Replace('/I', '/uninstall ') + ' /quiet').Replace('  ', ' ')\r\n            $FilePath = ($us.Substring(0, $us.IndexOf('.exe') + 4).Trim())\r\n            $ProcessArgs = ($us.Substring($us.IndexOf('.exe') + 5).Trim().replace('  ', ' '))\r\n            $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru\r\n            $proc.WaitForExit()\r\n        }\r\n      "
+      "
+        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
+        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
+
+        Write-Host \"Stopping Teams process...\"
+        Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue
+
+        Write-Host \"Uninstalling Teams from AppData\\Microsoft\\Teams\"
+        if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
+            # Uninstall app
+            $proc = Start-Process $TeamsUpdateExePath \"-uninstall -s\" -PassThru
+            $proc.WaitForExit()
+        }
+
+        Write-Host \"Removing Teams AppxPackage...\"
+        Get-AppxPackage \"*Teams*\" | Remove-AppxPackage -ErrorAction SilentlyContinue
+        Get-AppxPackage \"*Teams*\" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+
+        Write-Host \"Deleting Teams directory\"
+        if ([System.IO.Directory]::Exists($TeamsPath)) {
+            Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
+        }
+
+        Write-Host \"Deleting Teams uninstall registry key\"
+        # Uninstall from Uninstall registry key UninstallString
+        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString
+        if ($us.Length -gt 0) {
+            $us = ($us.Replace('/I', '/uninstall ') + ' /quiet').Replace('  ', ' ')
+            $FilePath = ($us.Substring(0, $us.IndexOf('.exe') + 4).Trim())
+            $ProcessArgs = ($us.Substring($us.IndexOf('.exe') + 5).Trim().replace('  ', ' '))
+            $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
+            $proc.WaitForExit()
+        }
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"
   },
@@ -2310,7 +2401,46 @@
     "Checked": "False",
     "Order": "a001_",
     "InvokeScript": [
-      "\r\n        # Check if System Restore is enabled for the main drive\r\n        try {\r\n            # Try getting restore points to check if System Restore is enabled\r\n            Enable-ComputerRestore -Drive \"$env:SystemDrive\"\r\n        } catch {\r\n            Write-Host \"An error occurred while enabling System Restore: $_\"\r\n        }\r\n\r\n        # Check if the SystemRestorePointCreationFrequency value exists\r\n        $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue\r\n        if($null -eq $exists) {\r\n            write-host 'Changing system to allow multiple restore points per day'\r\n            Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null\r\n        }\r\n\r\n        # Attempt to load the required module for Get-ComputerRestorePoint\r\n        try {\r\n            Import-Module Microsoft.PowerShell.Management -ErrorAction Stop\r\n        } catch {\r\n            Write-Host \"Failed to load the Microsoft.PowerShell.Management module: $_\"\r\n            return\r\n        }\r\n\r\n        # Get all the restore points for the current day\r\n        try {\r\n            $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }\r\n        } catch {\r\n            Write-Host \"Failed to retrieve restore points: $_\"\r\n            return\r\n        }\r\n\r\n        # Check if there is already a restore point created today\r\n        if ($existingRestorePoints.Count -eq 0) {\r\n            $description = \"System Restore Point created by WinUtil\"\r\n\r\n            Checkpoint-Computer -Description $description -RestorePointType \"MODIFY_SETTINGS\"\r\n            Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"\r\n        }\r\n      "
+      "
+        # Check if System Restore is enabled for the main drive
+        try {
+            # Try getting restore points to check if System Restore is enabled
+            Enable-ComputerRestore -Drive \"$env:SystemDrive\"
+        } catch {
+            Write-Host \"An error occurred while enabling System Restore: $_\"
+        }
+
+        # Check if the SystemRestorePointCreationFrequency value exists
+        $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
+        if($null -eq $exists) {
+            write-host 'Changing system to allow multiple restore points per day'
+            Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
+        }
+
+        # Attempt to load the required module for Get-ComputerRestorePoint
+        try {
+            Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
+        } catch {
+            Write-Host \"Failed to load the Microsoft.PowerShell.Management module: $_\"
+            return
+        }
+
+        # Get all the restore points for the current day
+        try {
+            $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
+        } catch {
+            Write-Host \"Failed to retrieve restore points: $_\"
+            return
+        }
+
+        # Check if there is already a restore point created today
+        if ($existingRestorePoints.Count -eq 0) {
+            $description = \"System Restore Point created by WinUtil\"
+
+            Checkpoint-Computer -Description $description -RestorePointType \"MODIFY_SETTINGS\"
+            Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
+        }
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RestorePoint"
   },
@@ -2321,10 +2451,30 @@
     "panel": "1",
     "Order": "a006_",
     "InvokeScript": [
-      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"\r\n      $name = \"TaskbarEndTask\"\r\n      $value = 1\r\n\r\n      # Ensure the registry key exists\r\n      if (-not (Test-Path $path)) {\r\n        New-Item -Path $path -Force | Out-Null\r\n      }\r\n\r\n      # Set the property, creating it if it doesn't exist\r\n      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 1
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn't exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ],
     "UndoScript": [
-      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"\r\n      $name = \"TaskbarEndTask\"\r\n      $value = 0\r\n\r\n      # Ensure the registry key exists\r\n      if (-not (Test-Path $path)) {\r\n        New-Item -Path $path -Force | Out-Null\r\n      }\r\n\r\n      # Set the property, creating it if it doesn't exist\r\n      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 0
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn't exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar"
   },
@@ -2386,7 +2536,7 @@
   },
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
-    "Description": "Disables and removes MS Copilot AI built into Windows since 23H2.",
+    "Description": "Disables MS Copilot AI built into Windows since 23H2.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a025_",
@@ -2406,18 +2556,27 @@
     "Order": "a011_",
     "registry": [
       {
+
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
         "Name": "DisableAIDataAnalysis",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "\r\n                                                                                                                            <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
-      "\r\n      Write-Host \"Disable Recall\"\r\n      DISM /Online /Disable-Feature /FeatureName:Recall /Quiet /NoRestart\r\n      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"\r\n      "
+      "
+      Write-Host \"Disable Recall\"
+      DISM /Online /Disable-Feature /FeatureName:Recall /Quiet /NoRestart
+      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
+      "
     ],
     "UndoScript": [
-      "\r\n      Write-Host \"Enable Recall\"\r\n      DISM /Online /Enable-Feature /FeatureName:Recall /Quiet /NoRestart\r\n      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"\r\n      "
+      "
+      Write-Host \"Enable Recall\"
+      DISM /Online /Enable-Feature /FeatureName:Recall /Quiet /NoRestart
+      Write-Host \"Please restart your computer in order for the changes to be fully applied.\"
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DisableRecall"
   },
@@ -2428,12 +2587,72 @@
     "panel": "1",
     "Order": "a026_",
     "InvokeScript": [
-      "\r\n        Write-Host \"Kill LMS\"\r\n        $serviceName = \"LMS\"\r\n        Write-Host \"Stopping and disabling service: $serviceName\"\r\n        Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;\r\n        Set-Service -Name $serviceName -StartupType Disabled -ErrorAction SilentlyContinue;\r\n\r\n        Write-Host \"Removing service: $serviceName\";\r\n        sc.exe delete $serviceName;\r\n\r\n        Write-Host \"Removing LMS driver packages\";\r\n        $lmsDriverPackages = Get-ChildItem -Path \"C:\\Windows\\System32\\DriverStore\\FileRepository\" -Recurse -Filter \"lms.inf*\";\r\n        foreach ($package in $lmsDriverPackages) {\r\n            Write-Host \"Removing driver package: $($package.Name)\";\r\n            pnputil /delete-driver $($package.Name) /uninstall /force;\r\n        }\r\n        if ($lmsDriverPackages.Count -eq 0) {\r\n            Write-Host \"No LMS driver packages found in the driver store.\";\r\n        } else {\r\n            Write-Host \"All found LMS driver packages have been removed.\";\r\n        }\r\n\r\n        Write-Host \"Searching and deleting LMS executable files\";\r\n        $programFilesDirs = @(\"C:\\Program Files\", \"C:\\Program Files (x86)\");\r\n        $lmsFiles = @();\r\n        foreach ($dir in $programFilesDirs) {\r\n            $lmsFiles += Get-ChildItem -Path $dir -Recurse -Filter \"LMS.exe\" -ErrorAction SilentlyContinue;\r\n        }\r\n        foreach ($file in $lmsFiles) {\r\n            Write-Host \"Taking ownership of file: $($file.FullName)\";\r\n            & icacls $($file.FullName) /grant Administrators:F /T /C /Q;\r\n            & takeown /F $($file.FullName) /A /R /D Y;\r\n            Write-Host \"Deleting file: $($file.FullName)\";\r\n            Remove-Item $($file.FullName) -Force -ErrorAction SilentlyContinue;\r\n        }\r\n        if ($lmsFiles.Count -eq 0) {\r\n            Write-Host \"No LMS.exe files found in Program Files directories.\";\r\n        } else {\r\n            Write-Host \"All found LMS.exe files have been deleted.\";\r\n        }\r\n        Write-Host 'Intel LMS vPro service has been disabled, removed, and blocked.';\r\n       "
+      "
+        Write-Host \"Kill LMS\"
+        $serviceName = \"LMS\"
+        Write-Host \"Stopping and disabling service: $serviceName\"
+        Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;
+        Set-Service -Name $serviceName -StartupType Disabled -ErrorAction SilentlyContinue;
+
+        Write-Host \"Removing service: $serviceName\";
+        sc.exe delete $serviceName;
+
+        Write-Host \"Removing LMS driver packages\";
+        $lmsDriverPackages = Get-ChildItem -Path \"C:\\Windows\\System32\\DriverStore\\FileRepository\" -Recurse -Filter \"lms.inf*\";
+        foreach ($package in $lmsDriverPackages) {
+            Write-Host \"Removing driver package: $($package.Name)\";
+            pnputil /delete-driver $($package.Name) /uninstall /force;
+        }
+        if ($lmsDriverPackages.Count -eq 0) {
+            Write-Host \"No LMS driver packages found in the driver store.\";
+        } else {
+            Write-Host \"All found LMS driver packages have been removed.\";
+        }
+
+        Write-Host \"Searching and deleting LMS executable files\";
+        $programFilesDirs = @(\"C:\\Program Files\", \"C:\\Program Files (x86)\");
+        $lmsFiles = @();
+        foreach ($dir in $programFilesDirs) {
+            $lmsFiles += Get-ChildItem -Path $dir -Recurse -Filter \"LMS.exe\" -ErrorAction SilentlyContinue;
+        }
+        foreach ($file in $lmsFiles) {
+            Write-Host \"Taking ownership of file: $($file.FullName)\";
+            & icacls $($file.FullName) /grant Administrators:F /T /C /Q;
+            & takeown /F $($file.FullName) /A /R /D Y;
+            Write-Host \"Deleting file: $($file.FullName)\";
+            Remove-Item $($file.FullName) -Force -ErrorAction SilentlyContinue;
+        }
+        if ($lmsFiles.Count -eq 0) {
+            Write-Host \"No LMS.exe files found in Program Files directories.\";
+        } else {
+            Write-Host \"All found LMS.exe files have been deleted.\";
+        }
+        Write-Host 'Intel LMS vPro service has been disabled, removed, and blocked.';
+       "
     ],
     "UndoScript": [
-      "\r\n      Write-Host \"LMS vPro needs to be redownloaded from intel.com\"\r\n\r\n      "
+      "
+      Write-Host \"LMS vPro needs to be redownloaded from intel.com\"
+
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"
+  },
+  "WPFTweaksDisableWpbtExecution": {
+    "Content": "Disable Windows Platform Binary Table (WPBT)",
+    "Description": "If enabled then allows your computer vendor to execute a program each time it boots. It enables computer vendors to force install anti-theft software, software drivers, or a software program conveniently. This could also be a security risk.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a027_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager",
+        "Name": "DisableWpbtExecution",
+        "Value": "1",
+        "OriginalValue": "<RemoveEntry>",
+        "Type": "DWord"
+      }
+    ]
   },
   "WPFTweaksOORemove": {
     "Content": "Remove OneDrive and Outlook for Windows",
@@ -2472,10 +2691,22 @@
       }
     ],
     "InvokeScript": [
-      "\r\n          $RazerPath = \"C:\\Windows\\Installer\\Razer\"\r\n          Remove-Item $RazerPath -Recurse -Force\r\n          New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"\r\n          $Acl = Get-Acl $RazerPath\r\n          $Ar = New-Object System.Security.AccessControl.FileSystemAccessRule(\"NT AUTHORITY\\SYSTEM\",\"Write\",\"ContainerInherit,ObjectInherit\",\"None\",\"Deny\")\r\n          $Acl.SetAccessRule($Ar)\r\n          Set-Acl $RazerPath $Acl\r\n      "
+      "
+          $RazerPath = \"C:\\Windows\\Installer\\Razer\"
+          Remove-Item $RazerPath -Recurse -Force
+          New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
+          $Acl = Get-Acl $RazerPath
+          $Ar = New-Object System.Security.AccessControl.FileSystemAccessRule(\"NT AUTHORITY\\SYSTEM\",\"Write\",\"ContainerInherit,ObjectInherit\",\"None\",\"Deny\")
+          $Acl.SetAccessRule($Ar)
+          Set-Acl $RazerPath $Acl
+      "
     ],
     "UndoScript": [
-      "\r\n          $RazerPath = \"C:\\Windows\\Installer\\Razer\"\r\n          Remove-Item $RazerPath -Recurse -Force\r\n          New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"\r\n      "
+      "
+          $RazerPath = \"C:\\Windows\\Installer\\Razer\"
+          Remove-Item $RazerPath -Recurse -Force
+          New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RazerBlock"
   },
@@ -2491,7 +2722,7 @@
         "Name": "DisableNotificationCenter",
         "Type": "DWord",
         "Value": "1",
-        "OriginalValue": "\r\n                                                                                                                                <RemoveEntry>"
+        "OriginalValue": "<RemoveEntry>"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
@@ -2510,10 +2741,93 @@
     "panel": "1",
     "Order": "a021_",
     "InvokeScript": [
-      "\r\n      function CCStopper {\r\n        $path = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"\r\n\r\n        # Test if the path exists before proceeding\r\n        if (Test-Path $path) {\r\n            Takeown /f $path\r\n            $acl = Get-Acl $path\r\n            $acl.SetOwner([System.Security.Principal.NTAccount]\"Administrators\")\r\n            $acl | Set-Acl $path\r\n\r\n            Rename-Item -Path $path -NewName \"Adobe Desktop Service.exe.old\" -Force\r\n        } else {\r\n            Write-Host \"Adobe Desktop Service is not in the default location.\"\r\n        }\r\n      }\r\n\r\n\r\n      function AcrobatUpdates {\r\n        # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.\r\n        # Possible Values for the edited key:\r\n        # 0 = Do not download or install updates automatically\r\n        # 2 = Automatically download updates but let the user choose when to install them\r\n        # 3 = Automatically download and install updates (default value)\r\n        # 4 = Notify the user when an update is available but don't download or install it automatically\r\n        #   = It notifies the user using Windows Notifications. It runs on startup without having to have a Service/Acrobat/Reader running, therefore 0 is the next best thing.\r\n\r\n        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"\r\n\r\n        # Get all subkeys under the specified root path\r\n        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }\r\n\r\n        # Loop through each subkey\r\n        foreach ($subKey in $subKeys) {\r\n            # Get the full registry path\r\n            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName\r\n            try {\r\n                Set-ItemProperty -Path $fullPath -Name Mode -Value 0\r\n                Write-Host \"Acrobat Updates have been disabled.\"\r\n            } catch {\r\n                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"\r\n            }\r\n        }\r\n      }\r\n\r\n      CCStopper\r\n      AcrobatUpdates\r\n      "
+      "
+      function CCStopper {
+        $path = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
+
+        # Test if the path exists before proceeding
+        if (Test-Path $path) {
+            Takeown /f $path
+            $acl = Get-Acl $path
+            $acl.SetOwner([System.Security.Principal.NTAccount]\"Administrators\")
+            $acl | Set-Acl $path
+
+            Rename-Item -Path $path -NewName \"Adobe Desktop Service.exe.old\" -Force
+        } else {
+            Write-Host \"Adobe Desktop Service is not in the default location.\"
+        }
+      }
+
+
+      function AcrobatUpdates {
+        # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.
+        # Possible Values for the edited key:
+        # 0 = Do not download or install updates automatically
+        # 2 = Automatically download updates but let the user choose when to install them
+        # 3 = Automatically download and install updates (default value)
+        # 4 = Notify the user when an update is available but don't download or install it automatically
+        #   = It notifies the user using Windows Notifications. It runs on startup without having to have a Service/Acrobat/Reader running, therefore 0 is the next best thing.
+
+        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
+
+        # Get all subkeys under the specified root path
+        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
+
+        # Loop through each subkey
+        foreach ($subKey in $subKeys) {
+            # Get the full registry path
+            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
+            try {
+                Set-ItemProperty -Path $fullPath -Name Mode -Value 0
+                Write-Host \"Acrobat Updates have been disabled.\"
+            } catch {
+                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
+            }
+        }
+      }
+
+      CCStopper
+      AcrobatUpdates
+      "
     ],
     "UndoScript": [
-      "\r\n      function RestoreCCService {\r\n        $originalPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe.old\"\r\n        $newPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"\r\n\r\n        if (Test-Path -Path $originalPath) {\r\n            Rename-Item -Path $originalPath -NewName \"Adobe Desktop Service.exe\" -Force\r\n            Write-Host \"Adobe Desktop Service has been restored.\"\r\n        } else {\r\n            Write-Host \"Backup file does not exist. No changes were made.\"\r\n        }\r\n      }\r\n\r\n      function AcrobatUpdates {\r\n        # Default Value:\r\n        # 3 = Automatically download and install updates\r\n\r\n        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"\r\n\r\n        # Get all subkeys under the specified root path\r\n        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }\r\n\r\n        # Loop through each subkey\r\n        foreach ($subKey in $subKeys) {\r\n            # Get the full registry path\r\n            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName\r\n            try {\r\n                Set-ItemProperty -Path $fullPath -Name Mode -Value 3\r\n            } catch {\r\n                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"\r\n            }\r\n        }\r\n      }\r\n\r\n      RestoreCCService\r\n      AcrobatUpdates\r\n      "
+      "
+      function RestoreCCService {
+        $originalPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe.old\"
+        $newPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
+
+        if (Test-Path -Path $originalPath) {
+            Rename-Item -Path $originalPath -NewName \"Adobe Desktop Service.exe\" -Force
+            Write-Host \"Adobe Desktop Service has been restored.\"
+        } else {
+            Write-Host \"Backup file does not exist. No changes were made.\"
+        }
+      }
+
+      function AcrobatUpdates {
+        # Default Value:
+        # 3 = Automatically download and install updates
+
+        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
+
+        # Get all subkeys under the specified root path
+        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
+
+        # Loop through each subkey
+        foreach ($subKey in $subKeys) {
+            # Get the full registry path
+            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
+            try {
+                Set-ItemProperty -Path $fullPath -Name Mode -Value 3
+            } catch {
+                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
+            }
+        }
+      }
+
+      RestoreCCService
+      AcrobatUpdates
+      "
     ],
     "service": [
       {
@@ -2576,10 +2890,104 @@
     "panel": "1",
     "Order": "a021_",
     "InvokeScript": [
-      "\r\n      # Define the URL of the remote HOSTS file and the local paths\r\n      $remoteHostsUrl = \"https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts\"\r\n      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"\r\n      $tempHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\temp_hosts\"\r\n\r\n      # Download the remote HOSTS file to a temporary location\r\n      try {\r\n          Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath\r\n          Write-Output \"Downloaded the remote HOSTS file to a temporary location.\"\r\n      } catch {\r\n          Write-Error \"Failed to download the HOSTS file. Error: $_\"\r\n      }\r\n\r\n      # Check if the AdobeNetBlock has already been started\r\n      try {\r\n          $localHostsContent = Get-Content $localHostsPath -ErrorAction Stop\r\n\r\n          # Check if AdobeNetBlock markers exist\r\n          $blockStartExists = $localHostsContent -like \"*#AdobeNetBlock-start*\"\r\n          if ($blockStartExists) {\r\n              Write-Output \"AdobeNetBlock-start already exists. Skipping addition of new block.\"\r\n          } else {\r\n              # Load the new block from the downloaded file\r\n              $newBlockContent = Get-Content $tempHostsPath -ErrorAction Stop\r\n              $newBlockContent = $newBlockContent | Where-Object { $_ -notmatch \"^\\s*#\" -and $_ -ne \"\" } # Exclude empty lines and comments\r\n              $newBlockHeader = \"#AdobeNetBlock-start\"\r\n              $newBlockFooter = \"#AdobeNetBlock-end\"\r\n\r\n              # Combine the contents, ensuring new block is properly formatted\r\n              $combinedContent = $localHostsContent + $newBlockHeader, $newBlockContent, $newBlockFooter | Out-String\r\n\r\n              # Write the combined content back to the original HOSTS file\r\n              $combinedContent | Set-Content $localHostsPath -Encoding ASCII\r\n              Write-Output \"Successfully added the AdobeNetBlock.\"\r\n          }\r\n      } catch {\r\n          Write-Error \"Error during processing: $_\"\r\n      }\r\n\r\n      # Clean up temporary file\r\n      Remove-Item $tempHostsPath -ErrorAction Ignore\r\n\r\n      # Flush the DNS resolver cache\r\n      try {\r\n          Invoke-Expression \"ipconfig /flushdns\"\r\n          Write-Output \"DNS cache flushed successfully.\"\r\n      } catch {\r\n          Write-Error \"Failed to flush DNS cache. Error: $_\"\r\n      }\r\n      "
+      "
+      # Define the URL of the remote HOSTS file and the local paths
+      $remoteHostsUrl = \"https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts\"
+      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
+      $tempHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\temp_hosts\"
+
+      # Download the remote HOSTS file to a temporary location
+      try {
+          Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
+          Write-Output \"Downloaded the remote HOSTS file to a temporary location.\"
+      } catch {
+          Write-Error \"Failed to download the HOSTS file. Error: $_\"
+      }
+
+      # Check if the AdobeNetBlock has already been started
+      try {
+          $localHostsContent = Get-Content $localHostsPath -ErrorAction Stop
+
+          # Check if AdobeNetBlock markers exist
+          $blockStartExists = $localHostsContent -like \"*#AdobeNetBlock-start*\"
+          if ($blockStartExists) {
+              Write-Output \"AdobeNetBlock-start already exists. Skipping addition of new block.\"
+          } else {
+              # Load the new block from the downloaded file
+              $newBlockContent = Get-Content $tempHostsPath -ErrorAction Stop
+              $newBlockContent = $newBlockContent | Where-Object { $_ -notmatch \"^\\s*#\" -and $_ -ne \"\" } # Exclude empty lines and comments
+              $newBlockHeader = \"#AdobeNetBlock-start\"
+              $newBlockFooter = \"#AdobeNetBlock-end\"
+
+              # Combine the contents, ensuring new block is properly formatted
+              $combinedContent = $localHostsContent + $newBlockHeader, $newBlockContent, $newBlockFooter | Out-String
+
+              # Write the combined content back to the original HOSTS file
+              $combinedContent | Set-Content $localHostsPath -Encoding ASCII
+              Write-Output \"Successfully added the AdobeNetBlock.\"
+          }
+      } catch {
+          Write-Error \"Error during processing: $_\"
+      }
+
+      # Clean up temporary file
+      Remove-Item $tempHostsPath -ErrorAction Ignore
+
+      # Flush the DNS resolver cache
+      try {
+          Invoke-Expression \"ipconfig /flushdns\"
+          Write-Output \"DNS cache flushed successfully.\"
+      } catch {
+          Write-Error \"Failed to flush DNS cache. Error: $_\"
+      }
+      "
     ],
     "UndoScript": [
-      "\r\n      # Define the local path of the HOSTS file\r\n      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"\r\n\r\n      # Load the content of the HOSTS file\r\n      try {\r\n          $hostsContent = Get-Content $localHostsPath -ErrorAction Stop\r\n      } catch {\r\n          Write-Error \"Failed to load the HOSTS file. Error: $_\"\r\n          return\r\n      }\r\n\r\n      # Initialize flags and buffer for new content\r\n      $recording = $true\r\n      $newContent = @()\r\n\r\n      # Iterate over each line of the HOSTS file\r\n      foreach ($line in $hostsContent) {\r\n          if ($line -match \"#AdobeNetBlock-start\") {\r\n              $recording = $false\r\n          }\r\n          if ($recording) {\r\n              $newContent += $line\r\n          }\r\n          if ($line -match \"#AdobeNetBlock-end\") {\r\n              $recording = $true\r\n          }\r\n      }\r\n\r\n      # Write the filtered content back to the HOSTS file\r\n      try {\r\n          $newContent | Set-Content $localHostsPath -Encoding ASCII\r\n          Write-Output \"Successfully removed the AdobeNetBlock section from the HOSTS file.\"\r\n      } catch {\r\n          Write-Error \"Failed to write back to the HOSTS file. Error: $_\"\r\n      }\r\n\r\n      # Flush the DNS resolver cache\r\n      try {\r\n          Invoke-Expression \"ipconfig /flushdns\"\r\n          Write-Output \"DNS cache flushed successfully.\"\r\n      } catch {\r\n          Write-Error \"Failed to flush DNS cache. Error: $_\"\r\n      }\r\n      "
+      "
+      # Define the local path of the HOSTS file
+      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
+
+      # Load the content of the HOSTS file
+      try {
+          $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
+      } catch {
+          Write-Error \"Failed to load the HOSTS file. Error: $_\"
+          return
+      }
+
+      # Initialize flags and buffer for new content
+      $recording = $true
+      $newContent = @()
+
+      # Iterate over each line of the HOSTS file
+      foreach ($line in $hostsContent) {
+          if ($line -match \"#AdobeNetBlock-start\") {
+              $recording = $false
+          }
+          if ($recording) {
+              $newContent += $line
+          }
+          if ($line -match \"#AdobeNetBlock-end\") {
+              $recording = $true
+          }
+      }
+
+      # Write the filtered content back to the HOSTS file
+      try {
+          $newContent | Set-Content $localHostsPath -Encoding ASCII
+          Write-Output \"Successfully removed the AdobeNetBlock section from the HOSTS file.\"
+      } catch {
+          Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
+      }
+
+      # Flush the DNS resolver cache
+      try {
+          Invoke-Expression \"ipconfig /flushdns\"
+          Write-Output \"DNS cache flushed successfully.\"
+      } catch {
+          Write-Error \"Failed to flush DNS cache. Error: $_\"
+      }
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet"
   },
@@ -2590,10 +2998,21 @@
     "panel": "1",
     "Order": "a027_",
     "InvokeScript": [
-      "\r\n      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"\r\n      Write-Host Restarting explorer.exe ...\r\n      $process = Get-Process -Name \"explorer\"\r\n      Stop-Process -InputObject $process\r\n      "
+      "
+      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
+      Write-Host Restarting explorer.exe ...
+      $process = Get-Process -Name \"explorer\"
+      Stop-Process -InputObject $process
+      "
     ],
     "UndoScript": [
-      "\r\n      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force\r\n      # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.\r\n      Write-Host Restarting explorer.exe ...\r\n      $process = Get-Process -Name \"explorer\"\r\n      Stop-Process -InputObject $process\r\n      "
+      "
+      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
+      # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.
+      Write-Host Restarting explorer.exe ...
+      $process = Get-Process -Name \"explorer\"
+      Stop-Process -InputObject $process
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu"
   },
@@ -2604,7 +3023,10 @@
     "panel": "1",
     "Order": "a009_",
     "InvokeScript": [
-      "\r\n      cleanmgr.exe /d C: /VERYLOWDISK\r\n      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase\r\n      "
+      "
+      cleanmgr.exe /d C: /VERYLOWDISK
+      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup"
   },
@@ -2615,7 +3037,8 @@
     "panel": "1",
     "Order": "a002_",
     "InvokeScript": [
-      "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse\r\n    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
+      "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
+    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles"
   },
@@ -2658,7 +3081,7 @@
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
         "Name": "AllowGameDVR",
         "Value": "0",
-        "OriginalValue": "\r\n                                                                                                                                    <RemoveEntry>",
+        "OriginalValue": "<RemoveEntry>",
         "Type": "DWord"
       }
     ],
@@ -2787,10 +3210,20 @@
       }
     ],
     "InvokeScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate\r\n      if ($sync.ThemeButton.Content -eq [char]0xF08C) {\r\n        Invoke-WinutilThemeChange -theme \"Auto\"\r\n      }\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate
+      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+        Invoke-WinutilThemeChange -theme \"Auto\"
+      }
+      "
     ],
     "UndoScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate\r\n      if ($sync.ThemeButton.Content -eq [char]0xF08C) {\r\n        Invoke-WinutilThemeChange -theme \"Auto\"\r\n      }\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate
+      if ($sync.ThemeButton.Content -eq [char]0xF08C) {
+        Invoke-WinutilThemeChange -theme \"Auto\"
+      }
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
   },
@@ -2931,10 +3364,14 @@
       }
     ],
     "InvokeScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
     ],
     "UndoScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout"
   },
@@ -2956,10 +3393,14 @@
       }
     ],
     "InvokeScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
     ],
     "UndoScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion"
   },
@@ -3035,10 +3476,14 @@
       }
     ],
     "InvokeScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
     ],
     "UndoScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/HiddenFiles"
   },
@@ -3060,10 +3505,14 @@
       }
     ],
     "InvokeScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
     ],
     "UndoScript": [
-      "\r\n      Invoke-WinUtilExplorerUpdate -action \"restart\"\r\n      "
+      "
+      Invoke-WinUtilExplorerUpdate -action \"restart\"
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/ShowExt"
   },
