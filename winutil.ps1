@@ -5515,6 +5515,7 @@ function Invoke-WPFButton {
         "WPFWinUtilInstallPSProfile" {Invoke-WinUtilInstallPSProfile}
         "WPFWinUtilUninstallPSProfile" {Invoke-WinUtilUninstallPSProfile}
         "WPFWinUtilSSHServer" {Invoke-WPFSSHServer}
+        "WPFLaunchWin11DebloatButton" {Invoke-WPFLaunchWin11DebloatButton}
     }
 }
 # This script clears the Windows 11 Start Menu by utilizing the "-ClearStart" and "-ClearStartAllUsers" function of another script made by a well-known developer called Rapphi that is named Win11Debloat.
@@ -6297,6 +6298,29 @@ function Invoke-WPFInstallUpgrade {
         Write-Host "==========================================="
     }
 }
+function Invoke-WPFLaunchWin11DebloatButton {
+    Write-Host "Launching Win11Debloat by Rapphire..."
+
+    # Build the command to download and execute the remote script with the desired parameters.
+    $remoteScriptCommand = "& ([scriptblock]::Create((irm 'https://debloat.raphi.re/')))"
+
+    # Prepare the process start info to open an elevated PowerShell window.
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = "powershell.exe"
+    # We need to properly quote the remote command.
+    $psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$remoteScriptCommand`""
+    $psi.Verb = "runas"            # This requests elevation (admin privileges)
+    $psi.UseShellExecute = $true
+
+    # Start the elevated process.
+    $process = [System.Diagnostics.Process]::Start($psi)
+    Write-Host "Elevated process started. Waiting for it to complete..."
+
+    # Wait until the elevated process finishes.
+    $process.WaitForExit()
+
+    Write-Host "Returned to WinUtil Session" -ForegroundColor Green
+} # End Invoke-WPFLaunchWin11DebloatButton
 # This script removes both the OneDrive and the new Outlook applications from Windows. It closes all Outlook and OneDrive processes, completely uninstalls/removes OneDrive and Outlook plus integrations,
 # and cleans up any remaining folders and registry keys/items from those applications on the system.
 # It is based on a script called "uninstall_oo.ps1" originally written by @mre31 on GitHub, but modified and adapted to work within WinUtil.
@@ -7208,6 +7232,78 @@ function Invoke-WPFtweaksbutton {
     # [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
   }
 }
+function Invoke-WPFTweaksDeBloat {
+    Write-Host "Removing Microsoft Teams..."
+    Remove-Teams
+    Write-Host "Invoking Win11Debloat to remove any remaining bloat..." -ForegroundColor Cyan
+
+    # Build the command to download and execute the remote script with the desired parameters.
+    $remoteScriptCommand = "& ([scriptblock]::Create((irm 'https://debloat.raphi.re/'))) -RemoveApps -RemoveCommApps -RemoveGamingApps -Silent"
+
+    # Prepare the process start info to open an elevated PowerShell window.
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = "powershell.exe"
+    # We need to properly quote the remote command.
+    $psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$remoteScriptCommand`""
+    $psi.Verb = "runas"            # This requests elevation (admin privileges)
+    $psi.UseShellExecute = $true
+
+    # Start the elevated process.
+    $process = [System.Diagnostics.Process]::Start($psi)
+    Write-Host "Elevated process started. Waiting for it to complete..."
+
+    # Wait until the elevated process finishes.
+    $process.WaitForExit()
+
+    Write-Host "Remaining Leftover App Removal Completed" -ForegroundColor Green
+} # End Invoke-WPFTweaksDeBloat
+
+function Remove-Teams {
+    # Build the path to the Teams folder and its Update.exe file.
+    $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
+    $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
+
+    Write-Host "Stopping Teams process..." -ForegroundColor Cyan
+    Stop-Process -Name "*teams*" -Force -ErrorAction SilentlyContinue
+
+    Write-Host "Uninstalling Teams from AppData\Microsoft\Teams..." -ForegroundColor Cyan
+    if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
+        # Uninstall the Teams application.
+        $proc = Start-Process -FilePath $TeamsUpdateExePath -ArgumentList "-uninstall -s" -PassThru
+        $proc.WaitForExit()
+    }
+
+    Write-Host "Removing Teams AppxPackage..." -ForegroundColor Cyan
+    Get-AppxPackage "*Teams*" -ErrorAction SilentlyContinue | Remove-AppxPackage -ErrorAction SilentlyContinue
+    Get-AppxPackage "*Teams*" -AllUsers -ErrorAction SilentlyContinue | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+
+    Write-Host "Deleting Teams directory..." -ForegroundColor Cyan
+    if ([System.IO.Directory]::Exists($TeamsPath)) {
+        Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
+    }
+
+    Write-Host "Deleting Teams uninstall registry key..." -ForegroundColor Cyan
+    # Search for the uninstall string for Teams in the registry.
+    $us = (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, `
+           HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall | `
+           Get-ItemProperty | Where-Object { $_.DisplayName -like "*Teams*" }).UninstallString
+    if ($us -and $us.Length -gt 0) {
+        # Modify the uninstall string to run in quiet mode.
+        $us = ($us.Replace('/I', '/uninstall ') + ' /quiet').Replace('  ', ' ')
+        $FilePath = $us.Substring(0, $us.IndexOf('.exe') + 4).Trim()
+        $ProcessArgs = $us.Substring($us.IndexOf('.exe') + 5).Trim().Replace('  ', ' ')
+        $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
+        $proc.WaitForExit()
+    }
+    Write-Host "Teams has been removed." -ForegroundColor Green
+} # End Function Remove Teams
+
+<#
+Usage:
+    To remove Teams and clean up its associated files and registry entries, run:
+        Remove-TeamsAndClean
+#>
+
 function Invoke-WPFUIElements {
     <#
     .SYNOPSIS
@@ -14416,7 +14512,7 @@ $sync.configs.tweaks = @'
                                           "*Microsoft.Advertising.Xaml*"
                                       ],
                              "InvokeScript":  [
-                                                  "\r\n        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, \u0027Microsoft\u0027, \u0027Teams\u0027)\r\n        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, \u0027Update.exe\u0027)\r\n\r\n        Write-Host \"Stopping Teams process...\"\r\n        Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue\r\n\r\n        Write-Host \"Uninstalling Teams from AppData\\Microsoft\\Teams\"\r\n        if ([System.IO.File]::Exists($TeamsUpdateExePath)) {\r\n            # Uninstall app\r\n            $proc = Start-Process $TeamsUpdateExePath \"-uninstall -s\" -PassThru\r\n            $proc.WaitForExit()\r\n        }\r\n\r\n        Write-Host \"Removing Teams AppxPackage...\"\r\n        Get-AppxPackage \"*Teams*\" | Remove-AppxPackage -ErrorAction SilentlyContinue\r\n        Get-AppxPackage \"*Teams*\" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue\r\n\r\n        Write-Host \"Deleting Teams directory\"\r\n        if ([System.IO.Directory]::Exists($TeamsPath)) {\r\n            Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue\r\n        }\r\n\r\n        Write-Host \"Deleting Teams uninstall registry key\"\r\n        # Uninstall from Uninstall registry key UninstallString\r\n        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like \u0027*Teams*\u0027}).UninstallString\r\n        if ($us.Length -gt 0) {\r\n            $us = ($us.Replace(\u0027/I\u0027, \u0027/uninstall \u0027) + \u0027 /quiet\u0027).Replace(\u0027  \u0027, \u0027 \u0027)\r\n            $FilePath = ($us.Substring(0, $us.IndexOf(\u0027.exe\u0027) + 4).Trim())\r\n            $ProcessArgs = ($us.Substring($us.IndexOf(\u0027.exe\u0027) + 5).Trim().replace(\u0027  \u0027, \u0027 \u0027))\r\n            $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru\r\n            $proc.WaitForExit()\r\n        }\r\n      "
+                                                  "Invoke-WPFTweaksDeBloat"
                                               ],
                              "link":  "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"
                          },
@@ -15316,7 +15412,7 @@ $sync.configs.tweaks = @'
                          "Content":  "DNS",
                          "category":  "z__Advanced Tweaks - CAUTION",
                          "panel":  "1",
-                         "Order":  "a040_",
+                         "Order":  "a041_",
                          "Type":  "Combobox",
                          "ComboItems":  "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult dns0.eu_Open dns0.eu_ZERO dns0.eu_KIDS",
                          "link":  "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/changedns"
@@ -15449,6 +15545,14 @@ $sync.configs.tweaks = @'
                                         "UndoScript":  [
                                                            "Write-Host \"There is no undo function for this tweak.\""
                                                        ],
+                                        "link":  "https://github.com/Raphire/Win11Debloat"
+                                    },
+    "WPFLaunchWin11DebloatButton":  {
+                                        "Content":  "Launch Win11Debloat Tool",
+                                        "category":  "z__Advanced Tweaks - CAUTION",
+                                        "panel":  "1",
+                                        "Order":  "a040_",
+                                        "Type":  "Button",
                                         "link":  "https://github.com/Raphire/Win11Debloat"
                                     }
 }
