@@ -2282,8 +2282,8 @@
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display"
   },
   "WPFTweaksDeBloat": {
-    "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
+    "Content": "WinUtil App Removal",
+    "Description": "USE WITH CAUTION!!!!! This removes a pre-defined selection of installed MS Store Apps set in WinUtil. Games installed by MS Store ARE INCLUDED! This can optionally be used in tandem with the Win11Debloat App Removal Tweak.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a028_",
@@ -2356,7 +2356,40 @@
       "*Microsoft.Advertising.Xaml*"
     ],
     "InvokeScript": [
-      "Invoke-WPFTweaksDeBloat"
+      "
+        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
+        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
+
+        Write-Host \"Stopping Teams process...\"
+        Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue
+
+        Write-Host \"Uninstalling Teams from AppData\\Microsoft\\Teams\"
+        if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
+            # Uninstall app
+            $proc = Start-Process $TeamsUpdateExePath \"-uninstall -s\" -PassThru
+            $proc.WaitForExit()
+        }
+
+        Write-Host \"Removing Teams AppxPackage...\"
+        Get-AppxPackage \"*Teams*\" | Remove-AppxPackage -ErrorAction SilentlyContinue
+        Get-AppxPackage \"*Teams*\" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+
+        Write-Host \"Deleting Teams directory\"
+        if ([System.IO.Directory]::Exists($TeamsPath)) {
+            Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
+        }
+
+        Write-Host \"Deleting Teams uninstall registry key\"
+        # Uninstall from Uninstall registry key UninstallString
+        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString
+        if ($us.Length -gt 0) {
+            $us = ($us.Replace('/I', '/uninstall ') + ' /quiet').Replace('  ', ' ')
+            $FilePath = ($us.Substring(0, $us.IndexOf('.exe') + 4).Trim())
+            $ProcessArgs = ($us.Substring($us.IndexOf('.exe') + 5).Trim().replace('  ', ' '))
+            $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
+            $proc.WaitForExit()
+        }
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"
   },
@@ -3707,7 +3740,7 @@
   },
   "WPFTweaksClearStart": {
     "Content": "Clear Windows 11 Start Menu (Current User)",
-    "Description": "Unpins all programs from the Start Menu for the current user Using Win11Debloat Script made by well-known developer Rapphi. For later versions of Windows 11 Only",
+    "Description": "Unpins all programs from the Start Menu for the current user Using Win11Debloat Script made by well-known developer Raphire. For later versions of Windows 11 Only",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a018_",
@@ -3721,7 +3754,7 @@
   },
   "WPFTweaksClearStartAllUsers": {
     "Content": "Clear Windows 11 Start Menu (All Users)",
-    "Description": "Unpins all programs from the Start Menu for ALL USERS (new and existing) using Win11Debloat Script made by well-known developer Rapphi. For later versions of Windows 11 Only",
+    "Description": "Unpins all programs from the Start Menu for ALL USERS (new and existing) using Win11Debloat Script made by well-known developer Raphire. For later versions of Windows 11 Only",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
@@ -3734,11 +3767,25 @@
     "link": "https://github.com/Raphire/Win11Debloat"
   },
     "WPFLaunchWin11DebloatButton": {
-    "Content": "Launch Win11Debloat Tool",
+    "Content": "Launch Win11Debloat Script",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a040_",
     "Type": "Button",
+    "link": "https://github.com/Raphire/Win11Debloat"
+  },
+    "WPFTweaksWin11DebloatAuto": {
+    "Content": "Remove Apps with Win11Debloat",
+    "Description": "Removes a default selection of Windows bloat apps using the Win11Debloat Script. This can be used in tandem with WinUtil's native App Removal tweak if you so choose. Use with care.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a028_",
+    "InvokeScript": [
+      "Invoke-Win11DebloatAuto"
+    ],
+    "UndoScript": [
+      "Write-Host \"There is no undo function for this tweak.\""
+    ],
     "link": "https://github.com/Raphire/Win11Debloat"
   }
 }
