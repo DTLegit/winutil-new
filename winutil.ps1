@@ -7232,7 +7232,7 @@ function Invoke-WPFtweaksbutton {
     # [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
   }
 }
-function Invoke-Win11DebloatAuto {
+function Invoke-WPFTweaksWin11DebloatAuto {
     Write-Host "Downloading and running the Win11Debloat Script for app removal..." -ForegroundColor Cyan
 
     # Build the command to download and execute the remote script with the desired parameters.
@@ -15514,7 +15514,7 @@ $sync.configs.tweaks = @'
                                       "panel":  "1",
                                       "Order":  "a028_",
                                       "InvokeScript":  [
-                                                           "Invoke-Win11DebloatAuto"
+                                                           "Invoke-WPFTweaksWin11DebloatAuto"
                                                        ],
                                       "UndoScript":  [
                                                          "Write-Host \"There is no undo function for this tweak.\""

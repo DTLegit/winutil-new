@@ -3781,7 +3781,7 @@
     "panel": "1",
     "Order": "a028_",
     "InvokeScript": [
-      "Invoke-Win11DebloatAuto"
+      "Invoke-WPFTweaksWin11DebloatAuto"
     ],
     "UndoScript": [
       "Write-Host \"There is no undo function for this tweak.\""

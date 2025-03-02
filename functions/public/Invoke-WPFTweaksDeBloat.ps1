@@ -1,4 +1,4 @@
-function Invoke-Win11DebloatAuto {
+function Invoke-WPFTweaksWin11DebloatAuto {
     Write-Host "Downloading and running the Win11Debloat Script for app removal..." -ForegroundColor Cyan
 
     # Build the command to download and execute the remote script with the desired parameters.
