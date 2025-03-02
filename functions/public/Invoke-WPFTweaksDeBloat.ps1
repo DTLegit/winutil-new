@@ -1,30 +1,5 @@
 function Invoke-WPFTweaksDeBloat {
     Write-Host "Removing Microsoft Teams..."
-    Remove-Teams
-    Write-Host "Invoking Win11Debloat to remove any remaining bloat..." -ForegroundColor Cyan
-
-    # Build the command to download and execute the remote script with the desired parameters.
-    $remoteScriptCommand = "& ([scriptblock]::Create((irm 'https://debloat.raphi.re/'))) -RemoveApps -RemoveCommApps -RemoveGamingApps -Silent"
-
-    # Prepare the process start info to open an elevated PowerShell window.
-    $psi = New-Object System.Diagnostics.ProcessStartInfo
-    $psi.FileName = "powershell.exe"
-    # We need to properly quote the remote command.
-    $psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$remoteScriptCommand`""
-    $psi.Verb = "runas"            # This requests elevation (admin privileges)
-    $psi.UseShellExecute = $true
-
-    # Start the elevated process.
-    $process = [System.Diagnostics.Process]::Start($psi)
-    Write-Host "Elevated process started. Waiting for it to complete..."
-
-    # Wait until the elevated process finishes.
-    $process.WaitForExit()
-
-    Write-Host "Remaining Leftover App Removal Completed" -ForegroundColor Green
-} # End Invoke-WPFTweaksDeBloat
-
-function Remove-Teams {
     # Build the path to the Teams folder and its Update.exe file.
     $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
     $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
@@ -61,12 +36,28 @@ function Remove-Teams {
         $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
         $proc.WaitForExit()
     }
-    Write-Host "Teams has been removed." -ForegroundColor Green
-} # End Function Remove Teams
 
-<#
-Usage:
-    To remove Teams and clean up its associated files and registry entries, run:
-        Remove-TeamsAndClean
-#>
+    Write-Host "Teams has been removed." -ForegroundColor Green
+    Write-Host "Invoking Win11Debloat to remove any remaining bloat..." -ForegroundColor Cyan
+
+    # Build the command to download and execute the remote script with the desired parameters.
+    $remoteScriptCommand = "& ([scriptblock]::Create((irm 'https://debloat.raphi.re/'))) -RemoveApps -RemoveCommApps -RemoveGamingApps -Silent"
+
+    # Prepare the process start info to open an elevated PowerShell window.
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = "powershell.exe"
+    # We need to properly quote the remote command.
+    $psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$remoteScriptCommand`""
+    $psi.Verb = "runas"            # This requests elevation (admin privileges)
+    $psi.UseShellExecute = $true
+
+    # Start the elevated process.
+    $process = [System.Diagnostics.Process]::Start($psi)
+    Write-Host "Elevated process started. Waiting for it to complete..."
+
+    # Wait until the elevated process finishes.
+    $process.WaitForExit()
+
+    Write-Host "Remaining Leftover App Removal Completed" -ForegroundColor Green
+} # End Invoke-WPFTweaksDeBloat
 
