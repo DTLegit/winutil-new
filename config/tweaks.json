@@ -3737,5 +3737,33 @@
       "Invoke-UndoWPFToggleBlackTaskbarStartMenu"
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
+  },
+  "WPFTweaksClearStart": {
+    "Content": "Clear Windows 11 Start Menu (Current User)",
+    "Description": "Unpins all programs from the Start Menu for the current user Using Win11Debloat Script made by well-known developer Rapphi. For later versions of Windows 11 Only",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a018_",
+    "InvokeScript": [
+      "Invoke-WPFTweaksClearStart"
+    ],
+    "UndoScript": [
+      "Write-Host \"There is no undo function for this tweak.\""
+    ],
+    "link": "https://github.com/Raphire/Win11Debloat"
+  },
+  "WPFTweaksClearStartAllUsers": {
+    "Content": "Clear Windows 11 Start Menu (All Users)",
+    "Description": "Unpins all programs from the Start Menu for ALL USERS (new and existing) using Win11Debloat Script made by well-known developer Rapphi. For later versions of Windows 11 Only",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a030_",
+    "InvokeScript": [
+      "Invoke-WPFTweaksClearStartAllUsers"
+    ],
+    "UndoScript": [
+      "Write-Host \"There is no undo function for this tweak.\""
+    ],
+    "link": "https://github.com/Raphire/Win11Debloat"
   }
 }
