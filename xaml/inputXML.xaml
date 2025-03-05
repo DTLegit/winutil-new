@@ -1045,13 +1045,23 @@
                                              Foreground="{DynamicResource MainForegroundColor}">
                                         <Run FontWeight="Bold">Balanced Security Configuration</Run>
                                         <LineBreak/>
-                                         - Enables Target Release Version Policies to lock in receiving updates to only the major Windows feature update version that your system is currently running.
+                                         - Enables Target Release Version Policies to lock in receiving updates for only the major Windows feature update version that your system is currently running.
                                         <LineBreak/>
-                                         - Windows will automatically update to the latest feature update version after the currently running version runs out of support (2-year support window after release for Windows Home and Pro).
+                                         - Windows will still automatically update to the latest supported feature update version after the currently running version runs out of support (Typically a 2-year support window after each release for Windows Home and Pro).
                                         <LineBreak/>
-                                         - Timestamp based tasks will also be set to ensure persistence in these settings stay in place through feature updates and changes.
+                                         - This will also disable driver updates through Windows Update to prevent driver breakage and improve system stability, ensuring that drivers can be updated via their own updaters or installers.
                                         <LineBreak/>
-                                         - Security updates will be installed after 4 days.
+                                         - Registry settings are also changed to tell Windows Update not to automatically restart the computer while the user is logged into their PC after an installed update.
+                                        <LineBreak/>
+                                         - Security updates will be installed after 4 days of release so that any bugs within the quality update are ironed out.
+                                        <LineBreak/>
+                                         - A copy of the script for setting the security updates, along with a "timestamp.txt" file will be saved to "C:\ProgramData\Security Updates Settings".
+                                        <LineBreak/>
+                                         - A scheduled task called "WindowsUpdateSettingsTask" will also be created, being set to run at both startup and once a week to check the timestamp file and ensure that the update registry configurations still exist.
+                                        <LineBreak/>
+                                         - If it has been at least 364 days and the update registry settings are either out-of-date, non-existent, or have been altered in some way, the scheduled task should run the saved script and update/re-apply those registry settings.
+                                        <LineBreak/>
+                                         - Logs from the last three recent runs of the script will be saved in a sub-directory (simply called "Logs") inside the same folder that the script and timestamp.txt file exist on your PC, in case something goes wrong.
                                         <LineBreak/><LineBreak/>
                                         <Run FontWeight="SemiBold">Feature Updates:</Run> New features and potential bugs
                                         <LineBreak/>
